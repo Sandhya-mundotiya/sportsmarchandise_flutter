@@ -1,0 +1,1 @@
+const walkThrough1 = "assets/onboarding1.svg";
