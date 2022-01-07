@@ -35,7 +35,7 @@ class Category extends Equatable {
         isEnabled: snap['isEnabled'],
         isSubCategory: snap['isSubCategory'],
         catId: snap['catId'],
-        uId: snap['uId']
+        uId: snap.id
     );
     return category;
   }

@@ -34,7 +34,7 @@ class Product extends Equatable {
       description: snap['description'],
       lastBought: snap['lastBought'],
       sold: snap['sold'],
-      uid: snap['uid'],
+      uid: snap.id,
       stockQty:snap['stockQty']
     );
     return product;

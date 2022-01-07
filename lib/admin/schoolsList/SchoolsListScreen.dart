@@ -38,8 +38,21 @@ class SchoolsListScreen extends StatelessWidget{
       onTap: (){
         Navigator.push(context,MaterialPageRoute(builder: (context) => HomeScreen(schoolId: school.uid)));
       },
-      child: Container(
-        child: Text(school.name),
+      child: Row(
+        children: [
+          Expanded(
+            child: Card(
+              elevation: 15,
+            shape:RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                child: Text(school.name),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

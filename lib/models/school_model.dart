@@ -19,7 +19,7 @@ class School extends Equatable {
   static School fromSnapshot(DocumentSnapshot snap) {
     School school = School(
         name: snap['name'],
-        uid: snap['uid']
+        uid: snap.id
     );
     return school;
   }
