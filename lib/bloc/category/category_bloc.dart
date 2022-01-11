@@ -12,8 +12,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final CategoryRepository _categoryRepository;
   StreamSubscription _categorySubscription;
 
-  CategoryBloc({CategoryRepository categoryRepository})
-      : _categoryRepository = categoryRepository,
+  CategoryBloc({CategoryRepository categoryRepository}): _categoryRepository = categoryRepository,
         super(CategoryLoading());
 
   @override

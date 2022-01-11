@@ -27,6 +27,13 @@ class Category extends Equatable {
         catId,
         uId
       ];
+  Map<String, dynamic> toJson() => {
+    "name": name,
+    "description": description,
+    "isEnabled": isEnabled,
+    "isSubCategory": isSubCategory,
+    "catId": catId,
+  };
 
   static Category fromSnapshot(DocumentSnapshot snap) {
     Category category = Category(
@@ -39,4 +46,5 @@ class Category extends Equatable {
     );
     return category;
   }
+
 }

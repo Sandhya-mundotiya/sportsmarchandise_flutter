@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:merch/admin/home/HomeScreen.dart';
 import 'package:merch/bloc/school/school_bloc.dart';
-import 'package:merch/main.dart';
+import 'package:merch/constants/utils/School.dart';
 import 'package:merch/models/school_model.dart';
 
-import 'SchoolsListController.dart';
-
 class SchoolsListScreen extends StatelessWidget{
+  static String abcd;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,19 +35,20 @@ class SchoolsListScreen extends StatelessWidget{
   Widget listItem(BuildContext context,School school){
     return InkWell(
       onTap: (){
+        SchoolData.schoolId=school.uid;
         Navigator.push(context,MaterialPageRoute(builder: (context) => HomeScreen(schoolId: school.uid)));
       },
       child: Row(
         children: [
           Expanded(
             child: Card(
-              elevation: 15,
+              elevation: 5,
             shape:RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15.0),
             ),
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                child: Text(school.name),
+                child: Text(school.name,textAlign: TextAlign.center,),
               ),
             ),
           ),

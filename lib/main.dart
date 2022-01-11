@@ -6,11 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:merch/admin/addCategory/AddCategoryController.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
 import 'package:merch/bloc/product/product_bloc.dart';
 import 'package:merch/bloc/school/school_bloc.dart';
 import 'package:merch/common/AppBlocObserver.dart';
 import 'package:merch/common/AppSelectionScreen.dart';
+import 'package:merch/constants/utils/NavigationService.dart';
 import 'package:merch/firebase_options.dart';
 import 'package:merch/repositories/category/category_repository.dart';
 import 'package:merch/repositories/product/product_repository.dart';
@@ -24,6 +26,7 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = AppBlocObserver();
+
   runApp(MyApp());
 }
 
@@ -49,7 +52,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: false,
+        debugShowCheckedModeBanner: false,navigatorKey: NavigationService.navigatorKey,
         title: 'Sport Center',
         theme: ThemeData(
           primarySwatch: Colors.blue,

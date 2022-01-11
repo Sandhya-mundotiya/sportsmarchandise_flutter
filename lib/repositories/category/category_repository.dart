@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:merch/constants/FirestoreConstants.dart';
+import 'package:merch/constants/utils/School.dart';
 import 'package:merch/models/category_model.dart';
 import 'package:merch/repositories/category/base_category_repository.dart';
 
@@ -12,7 +14,7 @@ class CategoryRepository extends BaseCategoryRepository {
   @override
   Stream<List<Category>> getAllCategories() {
     return _firebaseFirestore
-        .collection('categories')
+        .collection('schools').doc(SchoolData.schoolId).collection('categories')
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) => Category.fromSnapshot(doc)).toList();

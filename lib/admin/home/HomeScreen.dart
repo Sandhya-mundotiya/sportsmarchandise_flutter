@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:merch/admin/addItem/AddProduct.dart';
+import 'package:merch/admin/addItem/AddProductController.dart';
+import 'package:merch/main.dart';
 
 class HomeScreen extends StatelessWidget {
 
@@ -12,6 +14,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(onPressed:(){
+        getIt.registerSingleton<AddProductModel>(AddProductController());
         Navigator.push(context,MaterialPageRoute(builder: (context) => AddProductScreen(schoolId: schoolId)));
       },child: const Icon(Icons.add,color: Colors.white)),
       appBar: AppBar(

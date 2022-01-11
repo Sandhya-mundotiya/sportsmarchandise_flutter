@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:merch/constants/AppColor.dart';
+import 'package:merch/constants/utils/NavigationService.dart';
 import 'package:merch/constants/utils/SizeConfig.dart';
 
 Widget appSpinner(String label, TextEditingController controller,Function click){
@@ -193,6 +194,10 @@ bottomSheet(BuildContext context,String title, List<String> list, TextEditingCon
       ),
     ],
   );
+}
+
+snac(String message,{bool error,bool success}){
+  ScaffoldMessenger.of(NavigationService.navigatorKey.currentContext).showSnackBar(SnackBar(content: Text(message,style: TextStyle(color: error!=null && error?Colors.red:success!=null && success?Colors.green:Colors.white),)));
 }
 Widget spinnerField(Function onClick,{String hint,TextEditingController controller,String validation,int minLines}){
   return  Column(

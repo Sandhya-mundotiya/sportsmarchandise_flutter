@@ -1,36 +1,46 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:merch/common/CommonWidgets.dart';
 import 'package:merch/constants/FirestoreConstants.dart';
 import 'package:merch/models/category_model.dart';
 
 abstract class AddCategoryModel {
+  AddCategoryModel(){
+    init();
+  }
   var catValue = 1.obs;
-
+  var selectedCategory=Category().obs;
   var nameController=TextEditingController();
   var descController=TextEditingController();
+  var categoryController=TextEditingController();
   var isCategory=false.obs;
   var nameFocus=FocusNode();
   var descFocus=FocusNode();
 
+  init();
   addCategory(String schoolId);
 }
 
 class AddCategoryController extends AddCategoryModel {
-
+  bool isSubcategory;
+AddCategoryController({this.isSubcategory});
   Future<void> addCat(String schoolId) {
     CollectionReference reference = FirebaseFirestore.instance.collection(SCHOOL_TABLE).doc(schoolId).collection(CATEGORY_TABLE);
-    var categoryOb = Category(isEnabled: true,
-        catId: "",
+
+    var categoryOb = Category(
+      isEnabled: true,
+      isSubCategory: catValue.value==2 && categoryController.text.isNotEmpty ?? false,
+        catId: catValue.value==2 && categoryController.text.isNotEmpty?selectedCategory.value.uId:"",
         description: descController.text,
         name: nameController.text,
-        uId: "");
+    );
     return reference
-        .add(categoryOb)
+        .add(categoryOb.toJson())
         .then((value){
-      reference.doc(value.id).update({'uId':value.id});
       descController.text="";
       nameController.text="";
+      snac("Category Created",success: true);
     })
         .catchError((error) => print("Failed to add Category: $error"));
   }
@@ -38,5 +48,13 @@ class AddCategoryController extends AddCategoryModel {
   @override
   addCategory(schoolId) {
     addCat(schoolId);
+  }
+
+  @override
+  init() {
+    if(isSubcategory!=null && isSubcategory) {
+      catValue.value=2;
+      catValue.refresh();
+    }
   }
 }
