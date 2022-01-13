@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:merch/admin/addItem/AddProduct.dart';
 import 'package:merch/admin/addItem/AddProductController.dart';
 import 'package:merch/main.dart';

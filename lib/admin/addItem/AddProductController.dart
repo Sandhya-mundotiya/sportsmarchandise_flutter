@@ -1,23 +1,24 @@
 import 'package:flutter/cupertino.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:merch/models/category_model.dart';
 
 abstract class AddProductModel {
   AddProductModel(){
     init();
   }
-  var catValue = 1.obs;
-  var selectedCategory=Category().obs;
-  var selectedSubCategory=Category().obs;
+  var catValue = 1;
+  var selectedCategory=Category();
+  var selectedSubCategory=Category();
   var nameController=TextEditingController();
   var descController=TextEditingController();
+  var priceController=TextEditingController();
   var categoryController=TextEditingController();
   var subCategoryController=TextEditingController();
 
-  var isCategory=false.obs;
+  var isCategory=false;
+
   var nameFocus=FocusNode();
   var descFocus=FocusNode();
-
+  var priceFocus=FocusNode();
   init();
   addProduct(String schoolId);
 }

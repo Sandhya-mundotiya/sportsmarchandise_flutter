@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:merch/admin/addCategory/AddCategoryController.dart';
+import 'package:merch/admin/addCategory/CategoryCupid.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
 import 'package:merch/common/CommonWidgets.dart';
 import 'package:merch/constants/AppColor.dart';
@@ -35,36 +35,38 @@ class AddCategoryScreen extends StatelessWidget {
                 Expanded(
                   child: ListTile(
                       title: const Text('Category'),
-                      leading: Obx(() =>
-                          Radio(
-                            value: 1,
-                            groupValue: controller.catValue.value,
-                            onChanged: (int value) {
-                              controller.catValue.value = value;
-                              controller.catValue.refresh();
-                            },
-                          ))
+                      leading:  BlocBuilder<CategoryCubit, int>(
+                        builder: (context, category) => Radio(
+                          value: 1,
+                          groupValue: category,
+                          onChanged: (int value) {
+                            context.read<CategoryCubit>().one();
+                          },
+                        ),
+                      ),
                   ),
                 ),
                 Expanded(
                   child: ListTile(
                       title: const Text('SubCategory'),
-                      leading: Obx(() =>
-                          Radio(
-                            value: 2,
-                            groupValue: controller.catValue.value,
-                            onChanged: (int value) {
-                              controller.catValue.value = value;
-                              controller.catValue.refresh();
-                            },
-                          ))
+                      leading: BlocBuilder<CategoryCubit, int>(
+                        builder: (context, category) => Radio(
+                          value: 2,
+                          groupValue: category,
+                          onChanged: (int value) {
+                            context.read<CategoryCubit>().two();
+                          },
+                        ),
+                      ),
                   ),
                 ),
               ],),
-              Obx(() =>
-              getIt<AddCategoryModel>().catValue.value == 2 ? spinnerField(() {
+
+              BlocBuilder<CategoryCubit, int>(
+                builder: (context, category) => category==2?spinnerField(() {
                 categoryList(context,"Category",  controller.categoryController);
-              }, hint: "Category",controller: controller.categoryController) : const SizedBox()),
+                  }, hint: "Category",controller: controller.categoryController) : const SizedBox(),
+              ),
 
               formTextField(controller: controller.nameController,
                   focus: controller.nameFocus,
@@ -72,9 +74,8 @@ class AddCategoryScreen extends StatelessWidget {
               formTextField(controller: controller.descController,
                   focus: controller.descFocus,
                   hint: "Description"),
-              Obx(() =>
                   appButton(() {
-                    if(controller.catValue.value==2 && controller.categoryController.text.isEmpty){
+                    if(controller.catValue==2 && controller.categoryController.text.isEmpty){
                       snac("Please select one category",error: true);
                     }
                     else if(controller.nameController.text.isEmpty){
@@ -86,7 +87,7 @@ class AddCategoryScreen extends StatelessWidget {
                     else{
                       controller.addCategory(schoolId);
                     }
-                  }, text: controller.catValue.value == 2 ? "Add SubCategory" : "Add Category"))
+                  }, text: controller.catValue == 2 ? "Add SubCategory" : "Add Category")
             ],
           ),
         ),
@@ -100,7 +101,7 @@ class AddCategoryScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.4,
-        decoration:const BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(25.0),
@@ -155,9 +156,8 @@ class AddCategoryScreen extends StatelessWidget {
  Widget categoryListItem(context, Category category){
     return InkWell(
       onTap: (){
-        controller.selectedCategory.value=category;
+        controller.selectedCategory=category;
         controller.categoryController.text=category.name;
-        controller.selectedCategory.refresh();
        Navigator.pop(context);
       },
       child: Padding(

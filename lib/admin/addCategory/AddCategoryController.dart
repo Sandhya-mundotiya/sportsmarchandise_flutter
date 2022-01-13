@@ -1,20 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:merch/common/CommonWidgets.dart';
 import 'package:merch/constants/FirestoreConstants.dart';
+import 'package:merch/main.dart';
 import 'package:merch/models/category_model.dart';
 
 abstract class AddCategoryModel {
   AddCategoryModel(){
     init();
   }
-  var catValue = 1.obs;
-  var selectedCategory=Category().obs;
+  var catValue = 1;
+  var selectedCategory=const Category();
   var nameController=TextEditingController();
   var descController=TextEditingController();
   var categoryController=TextEditingController();
-  var isCategory=false.obs;
+  var isCategory=false;
   var nameFocus=FocusNode();
   var descFocus=FocusNode();
 
@@ -24,14 +25,14 @@ abstract class AddCategoryModel {
 
 class AddCategoryController extends AddCategoryModel {
   bool isSubcategory;
-AddCategoryController({this.isSubcategory});
+  AddCategoryController({this.isSubcategory});
   Future<void> addCat(String schoolId) {
     CollectionReference reference = FirebaseFirestore.instance.collection(SCHOOL_TABLE).doc(schoolId).collection(CATEGORY_TABLE);
 
     var categoryOb = Category(
       isEnabled: true,
-      isSubCategory: catValue.value==2 && categoryController.text.isNotEmpty ?? false,
-        catId: catValue.value==2 && categoryController.text.isNotEmpty?selectedCategory.value.uId:"",
+      isSubCategory: catValue==2 && categoryController.text.isNotEmpty ?? false,
+        catId: catValue==2 && categoryController.text.isNotEmpty?selectedCategory.uId:"",
         description: descController.text,
         name: nameController.text,
     );
@@ -53,8 +54,8 @@ AddCategoryController({this.isSubcategory});
   @override
   init() {
     if(isSubcategory!=null && isSubcategory) {
-      catValue.value=2;
-      catValue.refresh();
+      catValue=2;
     }
   }
 }
+

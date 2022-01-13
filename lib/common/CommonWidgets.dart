@@ -1,7 +1,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:merch/constants/AppColor.dart';
 import 'package:merch/constants/utils/NavigationService.dart';
 import 'package:merch/constants/utils/SizeConfig.dart';
@@ -119,7 +118,7 @@ bottomSheet(BuildContext context,String title, List<String> list, TextEditingCon
               actions: [
                 InkWell(
                   onTap: (){
-                    Get.back();
+                    Navigator.pop(context);
                   },
                   child: const Padding(
                     padding:EdgeInsets.all(8.0),
@@ -138,7 +137,7 @@ bottomSheet(BuildContext context,String title, List<String> list, TextEditingCon
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: (){
-                      Get.back();
+                      Navigator.pop(context);
                     },
                     child: Padding(
                       padding: EdgeInsets.symmetric(

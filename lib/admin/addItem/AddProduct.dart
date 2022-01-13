@@ -1,16 +1,11 @@
-import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:merch/admin/addCategory/AddCategoryController.dart';
 import 'package:merch/admin/addCategory/AddCategoryScreen.dart';
+import 'package:merch/admin/addCategory/CategoryCupid.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
 import 'package:merch/common/CommonWidgets.dart';
-import 'package:get/get.dart';
 import 'package:merch/constants/AppColor.dart';
 import 'package:merch/constants/utils/SizeConfig.dart';
 import 'package:merch/main.dart';
@@ -38,52 +33,64 @@ class AddProductScreen extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              appButton(() async {
-                FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: true, type: FileType.custom, allowedExtensions: ['jpg', 'jpeg', 'png'],);
+              formTextField(controller: controller.nameController,focus: controller.nameFocus,hint: "Name",focusNext: controller.priceFocus),
+              formTextField(controller: controller.priceController,focus: controller.priceFocus,hint: "Price",focusNext: controller.descFocus),
 
-                if (result != null) {
-                  List<File> files = result.paths.map((path) => File(path)).toList();
-                  if(files.isNotEmpty){
-                    var imageUrls = await uploadFiles(files);
-                    print(imageUrls);
-                  }
-                } else {
-                  // User canceled the picker
-                }
-              },text: "Add Images",isExpanded: true),
-              formTextField(controller: TextEditingController(),focus: FocusNode(),hint: "Name"),
-              formTextField(controller: TextEditingController(),focus: FocusNode(),hint: "Price"),
-          spinnerField(() {
+              spinnerField(() {
                 categoryList(context,"Category",  controller.categoryController);
               }, hint: "Category",controller: controller.categoryController),
-             Obx(()=>controller.selectedCategory.value.uId!=null?spinnerField(() {
-               categoryList(context,"Subcategory",  controller.subCategoryController,catId: controller.selectedCategory.value.uId);
-             }, hint: "Subcategory",controller: controller.subCategoryController):const SizedBox()) ,
 
-              formTextField(controller: TextEditingController(),focus: FocusNode(),hint: "Description"),
+             spinnerField(() {
+               categoryList(context,"Subcategory",  controller.subCategoryController,catId: controller.selectedCategory.uId);
+             }, hint: "Subcategory",controller: controller.subCategoryController),
+
+              formTextField(controller: controller.descController,focus: controller.descFocus,hint: "Description"),
               Row(
                 children: [
                   Expanded(
                     child: appButton((){
                       getIt.registerSingleton<AddCategoryModel>(AddCategoryController());
+                      context.read<CategoryCubit>().one();
                       Navigator.push(context,MaterialPageRoute(builder: (context) => AddCategoryScreen(schoolId: schoolId)));
                     },text: "Add Category",isExpanded: true),
                   ),
                   Expanded(
                     child: appButton((){
                       getIt.registerSingleton<AddCategoryModel>(AddCategoryController(isSubcategory: true));
+                      context.read<CategoryCubit>().two();
                       Navigator.push(context,MaterialPageRoute(builder: (context) => AddCategoryScreen(schoolId: schoolId)));
                     },text: "Add SubCategory",isExpanded: true),
                   )
                 ],
               ),
-              appButton((){},text: "Add Product",isExpanded: true)
+              appButton(()
+              {
+                if(controller.nameController.text.isEmpty){
+                  snac("Please type name",error: true);
+                }
+                else if(controller.priceController.text.isEmpty){
+                  snac("Please add product price",error: true);
+                }
+                else if(controller.categoryController.text.isEmpty){
+                  snac("Please select category",error: true);
+                }
+                else if(controller.subCategoryController.text.isEmpty){
+                  snac("Please select Subcategory",error: true);
+                }
+                else if(controller.descController.text.isEmpty) {
+                  snac("Please type description",error: true);
+                }
+                else {
+                  controller.addProduct(schoolId);
+                }
+              },text: "Add Product",isExpanded: true)
             ],
           ),
         ),
       ),
     );
   }
+
   categoryList(BuildContext context,String title, TextEditingController controller,{String catId}){
     showModalBottomSheet(
       context: context,
@@ -147,22 +154,18 @@ class AddProductScreen extends StatelessWidget {
     return InkWell(
       onTap: (){
         if(isSubCat){
-          controller.selectedSubCategory.value=category;
+          controller.selectedSubCategory=category;
           controller.subCategoryController.text=category.name;
-          controller.selectedCategory.refresh();
         }
         else{
-          if( controller.selectedCategory.value!=null && controller.selectedCategory.value.uId!=category.uId){
-            controller.selectedCategory.value=category;
+          if( controller.selectedCategory!=null && controller.selectedCategory.uId!=category.uId){
+            controller.selectedCategory=category;
             controller.categoryController.text=category.name;
-            controller.selectedCategory.refresh();
 
-            controller.selectedSubCategory.value=const Category();
+            controller.selectedSubCategory=const Category();
             controller.subCategoryController.text="";
-            controller.selectedSubCategory.refresh();
           }
         }
-
         Navigator.pop(context);
       },
       child: Padding(
@@ -172,20 +175,5 @@ class AddProductScreen extends StatelessWidget {
         child: Center(child: Text(category.name,style: TextStyle(fontSize: SizeConfig.blockSizeHorizontal * 3.5,fontWeight: FontWeight.w500,color: appBlack))),
       ),
     );
-  }
-
-  // Upload All Files on Firebase Store And Retrieve Download URL.
-  Future<List<String>> uploadFiles(List<File> _images) async {
-    var imageUrls = await Future.wait(_images.map((_image) => uploadFile(_image)));
-    return imageUrls;
-  }
-
-  Future<String> uploadFile(File _image) async {
-    String fileName = _image.path.split('/').last;
-    // Upload file
-    var ref =  FirebaseStorage.instance.ref('/uploads/$fileName');
-    await ref.putFile(_image);
-    // Get URL from Storage reference
-    return await ref.getDownloadURL();
   }
 }
