@@ -1,3 +1,8 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,6 +38,19 @@ class AddProductScreen extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
+              appButton(() async {
+                FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: true, type: FileType.custom, allowedExtensions: ['jpg', 'jpeg', 'png'],);
+
+                if (result != null) {
+                  List<File> files = result.paths.map((path) => File(path)).toList();
+                  if(files.isNotEmpty){
+                    var imageUrls = await uploadFiles(files);
+                    print(imageUrls);
+                  }
+                } else {
+                  // User canceled the picker
+                }
+              },text: "Add Images",isExpanded: true),
               formTextField(controller: TextEditingController(),focus: FocusNode(),hint: "Name"),
               formTextField(controller: TextEditingController(),focus: FocusNode(),hint: "Price"),
           spinnerField(() {
@@ -154,5 +172,20 @@ class AddProductScreen extends StatelessWidget {
         child: Center(child: Text(category.name,style: TextStyle(fontSize: SizeConfig.blockSizeHorizontal * 3.5,fontWeight: FontWeight.w500,color: appBlack))),
       ),
     );
+  }
+
+  // Upload All Files on Firebase Store And Retrieve Download URL.
+  Future<List<String>> uploadFiles(List<File> _images) async {
+    var imageUrls = await Future.wait(_images.map((_image) => uploadFile(_image)));
+    return imageUrls;
+  }
+
+  Future<String> uploadFile(File _image) async {
+    String fileName = _image.path.split('/').last;
+    // Upload file
+    var ref =  FirebaseStorage.instance.ref('/uploads/$fileName');
+    await ref.putFile(_image);
+    // Get URL from Storage reference
+    return await ref.getDownloadURL();
   }
 }
