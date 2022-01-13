@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +13,7 @@ import 'package:merch/constants/AppColor.dart';
 import 'package:merch/constants/utils/SizeConfig.dart';
 import 'package:merch/main.dart';
 import 'package:merch/models/category_model.dart';
+import 'package:multi_image_picker2/multi_image_picker2.dart';
 
 import 'AddProductController.dart';
 
@@ -30,62 +34,72 @@ class AddProductScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Add Product'),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              formTextField(controller: controller.nameController,focus: controller.nameFocus,hint: "Name",focusNext: controller.priceFocus),
-              formTextField(controller: controller.priceController,focus: controller.priceFocus,hint: "Price",focusNext: controller.descFocus),
-
-              spinnerField(() {
-                categoryList(context,"Category",  controller.categoryController);
-              }, hint: "Category",controller: controller.categoryController),
-
-             spinnerField(() {
-               categoryList(context,"Subcategory",  controller.subCategoryController,catId: controller.selectedCategory.uId);
-             }, hint: "Subcategory",controller: controller.subCategoryController),
-
-              formTextField(controller: controller.descController,focus: controller.descFocus,hint: "Description"),
-              Row(
+        body: Column(
+          children: [
+            productImagesView(),
+            Expanded(
+              child: Column(
                 children: [
-                  Expanded(
-                    child: appButton((){
-                      getIt.registerSingleton<AddCategoryModel>(AddCategoryController());
-                      context.read<CategoryCubit>().one();
-                      Navigator.push(context,MaterialPageRoute(builder: (context) => AddCategoryScreen(schoolId: schoolId)));
-                    },text: "Add Category",isExpanded: true),
+                 //
+                  appButton(() async {
+                    controller.loadAssets();
+                  },text: "Add Images",isExpanded: true),
+
+                  formTextField(controller: controller.nameController,focus: controller.nameFocus,hint: "Name",focusNext: controller.priceFocus),
+                  formTextField(controller: controller.priceController,focus: controller.priceFocus,hint: "Price",focusNext: controller.descFocus),
+
+                  spinnerField(() {
+                    categoryList(context,"Category",  controller.categoryController);
+                  }, hint: "Category",controller: controller.categoryController),
+
+                 spinnerField(() {
+                   categoryList(context,"Subcategory",  controller.subCategoryController,catId: controller.selectedCategory.uId);
+                 }, hint: "Subcategory",controller: controller.subCategoryController),
+
+                  formTextField(controller: controller.descController,focus: controller.descFocus,hint: "Description"),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: appButton((){
+                          getIt.registerSingleton<AddCategoryModel>(AddCategoryController());
+                          context.read<CategoryCubit>().one();
+                          Navigator.push(context,MaterialPageRoute(builder: (context) => AddCategoryScreen(schoolId: schoolId)));
+                        },text: "Add Category",isExpanded: true),
+                      ),
+                      Expanded(
+                        child: appButton((){
+                          getIt.registerSingleton<AddCategoryModel>(AddCategoryController(isSubcategory: true));
+                          context.read<CategoryCubit>().two();
+                          Navigator.push(context,MaterialPageRoute(builder: (context) => AddCategoryScreen(schoolId: schoolId)));
+                        },text: "Add SubCategory",isExpanded: true),
+                      )
+                    ],
                   ),
-                  Expanded(
-                    child: appButton((){
-                      getIt.registerSingleton<AddCategoryModel>(AddCategoryController(isSubcategory: true));
-                      context.read<CategoryCubit>().two();
-                      Navigator.push(context,MaterialPageRoute(builder: (context) => AddCategoryScreen(schoolId: schoolId)));
-                    },text: "Add SubCategory",isExpanded: true),
-                  )
+                  appButton(()
+                  {
+                    if(controller.nameController.text.isEmpty){
+                      snac("Please type name",error: true);
+                    }
+                    else if(controller.priceController.text.isEmpty){
+                      snac("Please add product price",error: true);
+                    }
+                    else if(controller.categoryController.text.isEmpty){
+                      snac("Please select category",error: true);
+                    }
+                    else if(controller.subCategoryController.text.isEmpty){
+                      snac("Please select Subcategory",error: true);
+                    }
+                    else if(controller.descController.text.isEmpty) {
+                      snac("Please type description",error: true);
+                    }
+                    else {
+                      controller.addProduct(schoolId);
+                    }
+                  },text: "Add Product",isExpanded: true)
                 ],
               ),
-              appButton(()
-              {
-                if(controller.nameController.text.isEmpty){
-                  snac("Please type name",error: true);
-                }
-                else if(controller.priceController.text.isEmpty){
-                  snac("Please add product price",error: true);
-                }
-                else if(controller.categoryController.text.isEmpty){
-                  snac("Please select category",error: true);
-                }
-                else if(controller.subCategoryController.text.isEmpty){
-                  snac("Please select Subcategory",error: true);
-                }
-                else if(controller.descController.text.isEmpty) {
-                  snac("Please type description",error: true);
-                }
-                else {
-                  controller.addProduct(schoolId);
-                }
-              },text: "Add Product",isExpanded: true)
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -158,7 +172,7 @@ class AddProductScreen extends StatelessWidget {
           controller.subCategoryController.text=category.name;
         }
         else{
-          if( controller.selectedCategory!=null && controller.selectedCategory.uId!=category.uId){
+          if(controller.selectedCategory!=null && controller.selectedCategory.uId!=category.uId){
             controller.selectedCategory=category;
             controller.categoryController.text=category.name;
 
@@ -176,4 +190,28 @@ class AddProductScreen extends StatelessWidget {
       ),
     );
   }
+  Widget productImagesView() {
+    return Container(
+      height: 100,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        primary: false,
+        children: List.generate(controller.images.length, (index) {
+          Asset asset = controller.images[index];
+          return Container(
+            margin: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
+            child: AssetThumb(
+              asset: asset,
+              width: 100,
+              height: 100,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
 }
