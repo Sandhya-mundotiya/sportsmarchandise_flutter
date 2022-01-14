@@ -1,6 +1,4 @@
-import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,6 +20,7 @@ class AddProductScreen extends StatelessWidget {
   String schoolId;
   List<String> imageList=[];
   var controller=getIt<AddProductModel>();
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -40,7 +39,6 @@ class AddProductScreen extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                 //
                   appButton(() async {
                     controller.loadAssets();
                   },text: "Add Images",isExpanded: true),
@@ -190,6 +188,7 @@ class AddProductScreen extends StatelessWidget {
       ),
     );
   }
+
   Widget productImagesView() {
     return Container(
       height: 100,
