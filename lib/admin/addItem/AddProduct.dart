@@ -1,10 +1,11 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:merch/admin/addCategory/AddCategoryController.dart';
 import 'package:merch/admin/addCategory/AddCategoryScreen.dart';
 import 'package:merch/admin/addCategory/CategoryCupid.dart';
+import 'package:merch/admin/addItem/AssetsCupid.dart';
+import 'package:merch/admin/addItem/LoaderCupid.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
 import 'package:merch/common/CommonWidgets.dart';
 import 'package:merch/constants/AppColor.dart';
@@ -18,14 +19,16 @@ import 'AddProductController.dart';
 class AddProductScreen extends StatelessWidget {
   AddProductScreen({Key key,this.schoolId}) : super(key: key);
   String schoolId;
-  List<String> imageList=[];
   var controller=getIt<AddProductModel>();
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+    List<Widget> widgetList = [];
+    var main= WillPopScope(
       onWillPop: (){
         getIt.unregister<AddProductModel>();
+        context.read<AssetCubit>().clear();
+        context.read<LoaderCubit>().hideLoader();
         Navigator.pop(context);
         return;
       },
@@ -40,8 +43,29 @@ class AddProductScreen extends StatelessWidget {
               child: Column(
                 children: [
                   appButton(() async {
-                    controller.loadAssets();
-                  },text: "Add Images",isExpanded: true),
+                    try {
+                      await MultiImagePicker.pickImages(
+                        maxImages: 5,
+                        enableCamera: true,
+                        selectedAssets: controller.images,
+                        cupertinoOptions: const CupertinoOptions(
+                          takePhotoIcon: "Camera",
+                          doneButtonTitle: "Done",
+                        ),
+                        materialOptions: const MaterialOptions(
+                          actionBarTitle: "Sports",
+                          allViewTitle: "All Photos",
+                          useDetailsView: false,
+                          selectCircleStrokeColor: "#000000",
+                        ),
+                      ).then((value) {
+                        controller.images=value;
+                        context.read<AssetCubit>().refresh();
+                      });
+                    } on Exception catch (e) {
+                     // error = e.toString();
+                    }
+                  },text: "Add/Change Images",isExpanded: true),
 
                   formTextField(controller: controller.nameController,focus: controller.nameFocus,hint: "Name",focusNext: controller.priceFocus),
                   formTextField(controller: controller.priceController,focus: controller.priceFocus,hint: "Price",focusNext: controller.descFocus),
@@ -75,7 +99,10 @@ class AddProductScreen extends StatelessWidget {
                   ),
                   appButton(()
                   {
-                    if(controller.nameController.text.isEmpty){
+                    if(controller.images.isEmpty){
+                      snac("Please upload at least one product image",error: true);
+                    }
+                    else if(controller.nameController.text.isEmpty){
                       snac("Please type name",error: true);
                     }
                     else if(controller.priceController.text.isEmpty){
@@ -91,7 +118,8 @@ class AddProductScreen extends StatelessWidget {
                       snac("Please type description",error: true);
                     }
                     else {
-                      controller.addProduct(schoolId);
+                      context.read<LoaderCubit>().showLoader();
+                      controller.addProduct(schoolId,context);
                     }
                   },text: "Add Product",isExpanded: true)
                 ],
@@ -101,6 +129,12 @@ class AddProductScreen extends StatelessWidget {
         ),
       ),
     );
+    widgetList.add(main);
+    widgetList.add(
+        BlocBuilder<LoaderCubit, bool>(
+            builder: (context, bool) => bool?loader(): const SizedBox()
+        ));
+    return Stack(children: widgetList);
   }
 
   categoryList(BuildContext context,String title, TextEditingController controller,{String catId}){
@@ -190,27 +224,27 @@ class AddProductScreen extends StatelessWidget {
   }
 
   Widget productImagesView() {
-    return Container(
-      height: 100,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        primary: false,
-        children: List.generate(controller.images.length, (index) {
-          Asset asset = controller.images[index];
-          return Container(
-            margin: const EdgeInsets.all(10),
-            padding: const EdgeInsets.all(10),
-            child: AssetThumb(
-              asset: asset,
-              width: 100,
-              height: 100,
-            ),
-          );
-        }).toList(),
-      ),
+    return BlocBuilder<AssetCubit, List<Asset>>(
+        builder: (context, assets) => assets!=null && assets.isNotEmpty?Container(
+          height: 170,
+          margin: const EdgeInsets.only(top: 5),
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: List.generate(assets.length, (index) {
+              Asset asset = assets[index];
+              return Container(
+                color: Colors.black,
+                margin: const EdgeInsets.all(3),
+                padding: const EdgeInsets.all(3),
+                child: AssetThumb(
+                  asset: asset,
+                  width: 100,
+                  height: 100,
+                ),
+              );
+            }).toList(),
+          ),
+        ): const SizedBox()
     );
   }
-
 }

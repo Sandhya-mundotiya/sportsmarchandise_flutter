@@ -1,8 +1,14 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_absolute_path/flutter_absolute_path.dart';
+import 'package:merch/common/CommonWidgets.dart';
+import 'package:merch/constants/FirestoreConstants.dart';
+import 'package:merch/constants/utils/School.dart';
 import 'package:merch/models/category_model.dart';
+import 'package:merch/models/product_model.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
 
 abstract class AddProductModel {
@@ -24,61 +30,49 @@ abstract class AddProductModel {
   var descFocus=FocusNode();
   var priceFocus=FocusNode();
   init();
-  addProduct(String schoolId);
-  loadAssets();
-  uploadFiles(List<File> _images);
+  addProduct(String schoolId,BuildContext context);
 }
 
 class AddProductController extends AddProductModel {
-  @override
-  addProduct(String schoolId) {
 
+  @override
+  addProduct(String schoolId,BuildContext context) {
+
+    uploadFiles(images).then((value){
+      addProductToFirestore(value,context);
+    });
   }
 
   @override
   init() {
 
   }
-  Future<List<String>> uploadFiles(List<File> _images) async {
+addProductToFirestore(List<String> images,BuildContext context){
+    var productObj=Product(
+        name: nameController.text,
+        catId: subCategoryController.text.isNotEmpty?selectedSubCategory.uId:selectedSubCategory.uId,
+        description: descController.text,
+        createdDate: DateTime.now().microsecondsSinceEpoch,
+        images: images,
+        price: priceController.text,
+    );
+    CollectionReference reference = FirebaseFirestore.instance.collection(SCHOOL_TABLE).doc(SchoolData.schoolId).collection(PRODUCT_TABLE);
+    reference.add(productObj.toJson()).then((value)  {
+
+      snac("Product Uploaded Successfully",success: true);
+      Navigator.pop(context);
+    });
+}
+  Future<List<String>> uploadFiles(List<Asset> _images) async {
     var imageUrls = await Future.wait(_images.map((_image) => uploadFile(_image)));
     return imageUrls;
   }
 
-  Future<String> uploadFile(File _image) async {
-    String fileName = _image.path.split('/').last;
-    // Upload file
-    var ref =  FirebaseStorage.instance.ref('/uploads/$fileName');
-    await ref.putFile(_image);
-    // Get URL from Storage reference
+  Future<String> uploadFile(Asset _image) async {
+    var path = await FlutterAbsolutePath.getAbsolutePath(_image.identifier);
+    String fileName = path.split('/').last;
+    var ref =  FirebaseStorage.instance.ref('/$PRODUCT_IMAGES/$fileName');
+    await ref.putFile(File(path));
     return await ref.getDownloadURL();
-  }
-  Future<void> loadAssets() async {
-    List<Asset> resultList = <Asset>[];
-    String error = 'No Error Detected';
-
-    try {
-      images = await MultiImagePicker.pickImages(
-        maxImages: 5,
-        enableCamera: true,
-        selectedAssets: images,
-        cupertinoOptions: const CupertinoOptions(
-          takePhotoIcon: "Camera",
-          doneButtonTitle: "Done",
-        ),
-        materialOptions: const MaterialOptions(
-         // actionBarColor: "#abcdef",
-          actionBarTitle: "Sports",
-          allViewTitle: "All Photos",
-          useDetailsView: false,
-          selectCircleStrokeColor: "#000000",
-        ),
-      );
-    } on Exception catch (e) {
-      error = e.toString();
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
   }
 }

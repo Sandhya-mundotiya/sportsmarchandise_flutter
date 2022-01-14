@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:merch/admin/addCategory/CategoryCupid.dart';
+import 'package:merch/admin/addItem/AssetsCupid.dart';
+import 'package:merch/admin/addItem/LoaderCupid.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
 import 'package:merch/bloc/product/product_bloc.dart';
 import 'package:merch/bloc/school/school_bloc.dart';
@@ -47,8 +49,9 @@ class MyApp extends StatelessWidget {
             SchoolRepository: SchoolRepository(),
           )..add(LoadSchools()),
         ),
-        BlocProvider(
-          create: (_) => CategoryCubit(),)
+        BlocProvider(create: (_) => CategoryCubit()),
+        BlocProvider(create: (_) => AssetCubit()),
+        BlocProvider(create: (_) => LoaderCubit())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,navigatorKey: NavigationService.navigatorKey,

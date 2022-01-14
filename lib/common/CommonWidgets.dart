@@ -5,6 +5,21 @@ import 'package:merch/constants/AppColor.dart';
 import 'package:merch/constants/utils/NavigationService.dart';
 import 'package:merch/constants/utils/SizeConfig.dart';
 
+ Widget loader(){
+   return Stack(
+     children: const [
+       Opacity(
+         opacity: 0.4,
+         child: ModalBarrier(dismissible: false, color: Colors.grey),
+       ),
+       Center(
+         child: CircularProgressIndicator(
+           valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+         ),
+       ),
+     ],
+   );
+ }
 Widget appSpinner(String label, TextEditingController controller,Function click){
   return Container(
     margin: EdgeInsets.symmetric(vertical: 5,horizontal: 5),

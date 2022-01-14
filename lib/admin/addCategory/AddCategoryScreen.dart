@@ -60,8 +60,7 @@ class AddCategoryScreen extends StatelessWidget {
                       ),
                   ),
                 ),
-              ],),
-
+              ]),
               BlocBuilder<CategoryCubit, int>(
                 builder: (context, category) => category==2?spinnerField(() {
                 categoryList(context,"Category",  controller.categoryController);

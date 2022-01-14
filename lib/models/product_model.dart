@@ -4,32 +4,45 @@ import 'package:equatable/equatable.dart';
 class Product extends Equatable {
   final String name;
   final String catId;
-  final List<String> imageUrl;
+  final List<String> images;
   final String uid;
-  final double price;
+  final String price;
+  final int createdDate;
   final String description;
   final double lastBought;
   final int sold;
   final String stockQty;
 
-
   const Product({
     this.name,
     this.stockQty,
+    this.createdDate,
     this.uid,
     this.catId,
-    this.imageUrl,
+    this.images,
     this.price,
     this.description,
     this.lastBought,
     this.sold
   });
 
+  Map<String, dynamic> toJson() => {
+    "name": name,
+    "category": catId,
+    "images": images,
+    "price": price,
+    "createdDate": createdDate,
+    "description": description,
+    "lastBought": lastBought,
+    "sold": sold,
+    "stockQty": stockQty,
+  };
+
   static Product fromSnapshot(DocumentSnapshot snap) {
     Product product = Product(
       name: snap['name'],
       catId: snap['category'],
-      imageUrl: snap['imageUrl'],
+      images: snap['imageUrl'],
       price: snap['price'],
       description: snap['description'],
       lastBought: snap['lastBought'],
@@ -44,7 +57,7 @@ class Product extends Equatable {
   List<Object> get props => [
         name,
         catId,
-        imageUrl,
+        images,
         price,
         description,
         lastBought,
