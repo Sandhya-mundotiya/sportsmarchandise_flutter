@@ -1,9 +1,9 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:merch/constants/AppColor.dart';
-import 'package:merch/constants/utils/NavigationService.dart';
-import 'package:merch/constants/utils/SizeConfig.dart';
+import 'package:merch/constants/app_color.dart';
+import 'package:merch/constants/utils/navigation_service.dart';
+import 'package:merch/constants/utils/size_config.dart';
 
  Widget loader(){
    return Stack(

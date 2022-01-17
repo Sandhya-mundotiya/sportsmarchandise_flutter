@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:merch/main.dart';
 
-import 'AddCategoryController.dart';
+import 'add_category_controller.dart';
 
 class CategoryCubit extends Cubit<int> {
   CategoryCubit() : super(1);

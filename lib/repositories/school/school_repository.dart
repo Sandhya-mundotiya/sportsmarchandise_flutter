@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:merch/constants/FirestoreConstants.dart';
+import 'package:merch/constants/firestore_constants.dart';
 import 'package:merch/models/school_model.dart';
 import 'package:merch/repositories/school/base_school_repository.dart';
 

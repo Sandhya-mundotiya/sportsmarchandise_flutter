@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:merch/admin/schoolsList/SchoolsListController.dart';
-import 'package:merch/admin/schoolsList/SchoolsListScreen.dart';
-import 'package:merch/constants/utils/SizeConfig.dart';
+import 'package:merch/admin/schools_list/schools_list_controller.dart';
+import 'package:merch/admin/schools_list/schools_list_screen.dart';
+import 'package:merch/constants/utils/size_config.dart';
 import 'package:merch/main.dart';
 
 class AppSelectionScreen extends StatelessWidget {

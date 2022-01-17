@@ -1,20 +1,20 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:merch/admin/addCategory/AddCategoryController.dart';
-import 'package:merch/admin/addCategory/AddCategoryScreen.dart';
-import 'package:merch/admin/addCategory/CategoryCupid.dart';
-import 'package:merch/admin/addItem/AssetsCupid.dart';
-import 'package:merch/admin/addItem/LoaderCupid.dart';
+import 'package:merch/admin/add_category/add_category_controller.dart';
+import 'package:merch/admin/add_category/add_category_screen.dart';
+import 'package:merch/admin/add_category/category_cupid.dart';
+import 'package:merch/admin/add_item/assets_cupid.dart';
+import 'package:merch/admin/add_item/loader_cupid.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
-import 'package:merch/common/CommonWidgets.dart';
-import 'package:merch/constants/AppColor.dart';
-import 'package:merch/constants/utils/SizeConfig.dart';
+import 'package:merch/common/common_widgets.dart';
+import 'package:merch/constants/app_color.dart';
+import 'package:merch/constants/utils/size_config.dart';
 import 'package:merch/main.dart';
 import 'package:merch/models/category_model.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
 
-import 'AddProductController.dart';
+import 'add_product_controller.dart';
 
 class AddProductScreen extends StatelessWidget {
   AddProductScreen({Key key,this.schoolId}) : super(key: key);
@@ -40,89 +40,91 @@ class AddProductScreen extends StatelessWidget {
           children: [
             productImagesView(),
             Expanded(
-              child: Column(
-                children: [
-                  appButton(() async {
-                    try {
-                      await MultiImagePicker.pickImages(
-                        maxImages: 5,
-                        enableCamera: true,
-                        selectedAssets: controller.images,
-                        cupertinoOptions: const CupertinoOptions(
-                          takePhotoIcon: "Camera",
-                          doneButtonTitle: "Done",
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    appButton(() async {
+                      try {
+                        await MultiImagePicker.pickImages(
+                          maxImages: 5,
+                          enableCamera: true,
+                          selectedAssets: controller.images,
+                          cupertinoOptions: const CupertinoOptions(
+                            takePhotoIcon: "Camera",
+                            doneButtonTitle: "Done",
+                          ),
+                          materialOptions: const MaterialOptions(
+                            actionBarTitle: "Sports",
+                            allViewTitle: "All Photos",
+                            useDetailsView: false,
+                            selectCircleStrokeColor: "#000000",
+                          ),
+                        ).then((value) {
+                          controller.images=value;
+                          context.read<AssetCubit>().refresh();
+                        });
+                      } on Exception catch (e) {
+                       // error = e.toString();
+                      }
+                    },text: "Add/Change Images",isExpanded: true),
+
+                    formTextField(controller: controller.nameController,focus: controller.nameFocus,hint: "Name",focusNext: controller.priceFocus),
+                    formTextField(controller: controller.priceController,focus: controller.priceFocus,hint: "Price",focusNext: controller.descFocus),
+
+                    spinnerField(() {
+                      categoryList(context,"Category",  controller.categoryController);
+                    }, hint: "Category",controller: controller.categoryController),
+
+                   spinnerField(() {
+                     categoryList(context,"Subcategory",  controller.subCategoryController,catId: controller.selectedCategory.uId);
+                   }, hint: "Subcategory",controller: controller.subCategoryController),
+
+                    formTextField(controller: controller.descController,focus: controller.descFocus,hint: "Description"),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: appButton((){
+                            getIt.registerSingleton<AddCategoryModel>(AddCategoryController());
+                            context.read<CategoryCubit>().one();
+                            Navigator.push(context,MaterialPageRoute(builder: (context) => AddCategoryScreen(schoolId: schoolId)));
+                          },text: "Add Category",isExpanded: true),
                         ),
-                        materialOptions: const MaterialOptions(
-                          actionBarTitle: "Sports",
-                          allViewTitle: "All Photos",
-                          useDetailsView: false,
-                          selectCircleStrokeColor: "#000000",
-                        ),
-                      ).then((value) {
-                        controller.images=value;
-                        context.read<AssetCubit>().refresh();
-                      });
-                    } on Exception catch (e) {
-                     // error = e.toString();
-                    }
-                  },text: "Add/Change Images",isExpanded: true),
-
-                  formTextField(controller: controller.nameController,focus: controller.nameFocus,hint: "Name",focusNext: controller.priceFocus),
-                  formTextField(controller: controller.priceController,focus: controller.priceFocus,hint: "Price",focusNext: controller.descFocus),
-
-                  spinnerField(() {
-                    categoryList(context,"Category",  controller.categoryController);
-                  }, hint: "Category",controller: controller.categoryController),
-
-                 spinnerField(() {
-                   categoryList(context,"Subcategory",  controller.subCategoryController,catId: controller.selectedCategory.uId);
-                 }, hint: "Subcategory",controller: controller.subCategoryController),
-
-                  formTextField(controller: controller.descController,focus: controller.descFocus,hint: "Description"),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: appButton((){
-                          getIt.registerSingleton<AddCategoryModel>(AddCategoryController());
-                          context.read<CategoryCubit>().one();
-                          Navigator.push(context,MaterialPageRoute(builder: (context) => AddCategoryScreen(schoolId: schoolId)));
-                        },text: "Add Category",isExpanded: true),
-                      ),
-                      Expanded(
-                        child: appButton((){
-                          getIt.registerSingleton<AddCategoryModel>(AddCategoryController(isSubcategory: true));
-                          context.read<CategoryCubit>().two();
-                          Navigator.push(context,MaterialPageRoute(builder: (context) => AddCategoryScreen(schoolId: schoolId)));
-                        },text: "Add SubCategory",isExpanded: true),
-                      )
-                    ],
-                  ),
-                  appButton(()
-                  {
-                    if(controller.images.isEmpty){
-                      snac("Please upload at least one product image",error: true);
-                    }
-                    else if(controller.nameController.text.isEmpty){
-                      snac("Please type name",error: true);
-                    }
-                    else if(controller.priceController.text.isEmpty){
-                      snac("Please add product price",error: true);
-                    }
-                    else if(controller.categoryController.text.isEmpty){
-                      snac("Please select category",error: true);
-                    }
-                    else if(controller.subCategoryController.text.isEmpty){
-                      snac("Please select Subcategory",error: true);
-                    }
-                    else if(controller.descController.text.isEmpty) {
-                      snac("Please type description",error: true);
-                    }
-                    else {
-                      context.read<LoaderCubit>().showLoader();
-                      controller.addProduct(schoolId,context);
-                    }
-                  },text: "Add Product",isExpanded: true)
-                ],
+                        Expanded(
+                          child: appButton((){
+                            getIt.registerSingleton<AddCategoryModel>(AddCategoryController(isSubcategory: true));
+                            context.read<CategoryCubit>().two();
+                            Navigator.push(context,MaterialPageRoute(builder: (context) => AddCategoryScreen(schoolId: schoolId)));
+                          },text: "Add SubCategory",isExpanded: true),
+                        )
+                      ],
+                    ),
+                    appButton(()
+                    {
+                      if(controller.images.isEmpty){
+                        snac("Please upload at least one product image",error: true);
+                      }
+                      else if(controller.nameController.text.isEmpty){
+                        snac("Please type name",error: true);
+                      }
+                      else if(controller.priceController.text.isEmpty){
+                        snac("Please add product price",error: true);
+                      }
+                      else if(controller.categoryController.text.isEmpty){
+                        snac("Please select category",error: true);
+                      }
+                      else if(controller.subCategoryController.text.isEmpty){
+                        snac("Please select Subcategory",error: true);
+                      }
+                      else if(controller.descController.text.isEmpty) {
+                        snac("Please type description",error: true);
+                      }
+                      else {
+                        context.read<LoaderCubit>().showLoader();
+                        controller.addProduct(schoolId,context);
+                      }
+                    },text: "Add Product",isExpanded: true)
+                  ],
+                ),
               ),
             ),
           ],

@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:merch/main.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
 
-import 'AddProductController.dart';
+import 'add_product_controller.dart';
 class AssetCubit extends Cubit<List<Asset>> {
   AssetCubit() : super([]);
   var controller=getIt<AddProductModel>();

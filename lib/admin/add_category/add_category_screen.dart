@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:merch/admin/addCategory/AddCategoryController.dart';
-import 'package:merch/admin/addCategory/CategoryCupid.dart';
+import 'package:merch/admin/add_category/add_category_controller.dart';
+import 'package:merch/admin/add_category/category_cupid.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
-import 'package:merch/common/CommonWidgets.dart';
-import 'package:merch/constants/AppColor.dart';
-import 'package:merch/constants/utils/SizeConfig.dart';
+import 'package:merch/common/common_widgets.dart';
+import 'package:merch/constants/app_color.dart';
+import 'package:merch/constants/utils/size_config.dart';
 import 'package:merch/main.dart';
 import 'package:merch/models/category_model.dart';
 

@@ -41,9 +41,12 @@ dependencies:
   firebase_storage: ^10.2.4
   equatable: ^2.0.0
   flutter_bloc: ^7.0.0
-  flutter_absolute_path: ^1.0.6
+  flutter_absolute_path:
+    git:
+      url: https://github.com/canewsin/flutter_absolute_path.git
   multi_image_picker2: ^5.0.2
   intl: ^0.17.0
+  file_picker: ^4.3.2
 
 dev_dependencies:
   flutter_test:

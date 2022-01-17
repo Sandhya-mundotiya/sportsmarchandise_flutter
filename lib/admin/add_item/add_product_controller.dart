@@ -4,12 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
-import 'package:merch/common/CommonWidgets.dart';
-import 'package:merch/constants/FirestoreConstants.dart';
-import 'package:merch/constants/utils/School.dart';
+import 'package:merch/common/common_widgets.dart';
+import 'package:merch/constants/firestore_constants.dart';
+import 'package:merch/constants/utils/school.dart';
 import 'package:merch/models/category_model.dart';
 import 'package:merch/models/product_model.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
+import 'package:file_picker/file_picker.dart';
 
 abstract class AddProductModel {
   AddProductModel(){
@@ -69,7 +70,11 @@ addProductToFirestore(List<String> images,BuildContext context){
   }
 
   Future<String> uploadFile(Asset _image) async {
-    var path = await FlutterAbsolutePath.getAbsolutePath(_image.identifier);
+
+     // var path = await MultipartFile.fromFile('assets/${_image.name}', filename: _image.name);
+     var path = await FlutterAbsolutePath.getAbsolutePath(_image.identifier);
+
+     print("path : " + path);
     String fileName = path.split('/').last;
     var ref =  FirebaseStorage.instance.ref('/$PRODUCT_IMAGES/$fileName');
     await ref.putFile(File(path));

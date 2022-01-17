@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:merch/common/CommonWidgets.dart';
-import 'package:merch/constants/FirestoreConstants.dart';
+import 'package:merch/common/common_widgets.dart';
+import 'package:merch/constants/firestore_constants.dart';
 import 'package:merch/models/category_model.dart';
 
 abstract class AddCategoryModel {
