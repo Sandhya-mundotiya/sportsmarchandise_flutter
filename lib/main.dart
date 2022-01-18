@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:merch/admin/add_category/category_cupid.dart';
 import 'package:merch/admin/add_item/assets_cupid.dart';
 import 'package:merch/admin/add_item/loader_cupid.dart';
+import 'package:merch/admin/home/cubid/product_detail_cubid.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
 import 'package:merch/bloc/product/product_bloc.dart';
 import 'package:merch/bloc/school/school_bloc.dart';
@@ -51,7 +52,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (_) => CategoryCubit()),
         BlocProvider(create: (_) => AssetCubit()),
-        BlocProvider(create: (_) => LoaderCubit())
+        BlocProvider(create: (_) => LoaderCubit()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,navigatorKey: NavigationService.navigatorKey,

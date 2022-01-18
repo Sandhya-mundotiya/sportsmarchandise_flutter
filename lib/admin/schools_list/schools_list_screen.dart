@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:merch/admin/home/home_screen.dart';
+import 'package:merch/admin/home/views/home_screen.dart';
 import 'package:merch/admin/schools_list/schools_list_controller.dart';
 import 'package:merch/bloc/school/school_bloc.dart';
 import 'package:merch/constants/utils/school.dart';
