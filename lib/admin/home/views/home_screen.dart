@@ -322,17 +322,29 @@ class HomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                       ),
                     ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: "Select",
-                        items: ["Select", "1"].map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        onChanged: (var item) {},
-                      ),
+                    child: BlocBuilder<CategoryBloc, CategoryState>(
+                      builder: (context, state) {
+
+                        List<Category> categories =
+                            state.categories == null
+                            ? [Category(name: selectValue)]
+                        : state.categories;
+
+                        String catval = categories == null ? selectValue : categories[0].name;
+
+                        return DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: catval,
+                            items: categories.map((Category category) {
+                              return DropdownMenuItem<String>(
+                                value: category.name,
+                                child: Text(category.name),
+                              );
+                            }).toList(),
+                            onChanged: (var item) {},
+                          ),
+                        );
+                      },
                     )),
 
                 //Created Date
