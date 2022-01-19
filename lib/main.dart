@@ -41,8 +41,8 @@ class MyApp extends StatelessWidget {
           )..add(LoadCategories()),
         ),
         BlocProvider(
-          create: (_) => ProductBloc(
-            productRepository: ProductRepository(),
+          create: (context) => ProductBloc(
+            productRepository: ProductRepository(),categoryBloc: BlocProvider.of<CategoryBloc>(context)
           )..add(LoadProducts()),
         ),
         BlocProvider(

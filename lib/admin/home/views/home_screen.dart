@@ -255,51 +255,54 @@ class HomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                       ),
                     ),
-                    child: BlocBuilder<CategoryBloc, CategoryState>(
-                      builder: (context, stateCat) {
-                        return BlocBuilder<ProductBloc, ProductState>(
-                          builder: (context, state) {
-                            List<Category> categories =
-                                stateCat.categories == null
-                                    ? [Category(name: selectValue)]
-                                    : stateCat.categories;
+                    child: BlocBuilder<ProductBloc, ProductState>(
+                      builder: (context, state) {
 
-                            if ((state is ProductLoaded &&
-                                state.filter != null)) {
-                              return DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: state.filter.catagory,
-                                  items: categories.map((Category category) {
-                                    return DropdownMenuItem<String>(
-                                      value: category.name,
-                                      child: Text(category.name),
-                                    );
-                                  }).toList(),
-                                  onChanged: (var item) {
-                                    context.read<ProductBloc>().add(
-                                        CategoryFilterUpdated(category: item));
-                                  },
-                                ),
-                              );
-                            } else {
-                              return DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: selectValue,
-                                  items: categories.map((Category category) {
-                                    return DropdownMenuItem<String>(
-                                      value: category.name,
-                                      child: Text(category.name),
-                                    );
-                                  }).toList(),
-                                  onChanged: (var item) {
-                                    context.read<ProductBloc>().add(
-                                        CategoryFilterUpdated(category: item));
-                                  },
-                                ),
-                              );
-                            }
-                          },
-                        );
+                        List<Category> categories = [];
+
+
+                        if(state.categories != null){
+                          categories.add(Category(name: selectValue));
+                          categories.addAll(state.categories.where(
+                                  (x) => x.catId != "").toList());
+                        }else{
+                          categories = [Category(name: selectValue)];
+                        }
+
+                        if ((state is ProductLoaded && state.filter != null)) {
+                          return DropdownButtonHideUnderline(
+                            child: DropdownButton<Category>(
+                              value: state.filter.catagory,
+                              disabledHint: Text(selectValue),
+                              items: categories.map((Category category) {
+                                return DropdownMenuItem<Category>(
+                                  value: category,
+                                  child: Text(category.name),
+                                );
+                              }).toList(),
+                              onChanged: (Category item) {
+                                context
+                                    .read<ProductBloc>()
+                                    .add(CategoryFilterUpdated(category: item));
+                              },
+                            ),
+                          );
+                        } else {
+                          return DropdownButtonHideUnderline(
+                            child: DropdownButton<Category>(
+                         value: Category(name:selectValue),
+                              items: [Category(name: selectValue)].map((Category category) {
+                                return DropdownMenuItem<Category>(
+                                  value: category,
+                                  child: Text(category.name),
+                                );
+                              }).toList(),
+                              onChanged: (var item) {
+
+                              },
+                            ),
+                          );
+                        }
                       },
                     )),
 
@@ -322,28 +325,54 @@ class HomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                       ),
                     ),
-                    child: BlocBuilder<CategoryBloc, CategoryState>(
+                    child: BlocBuilder<ProductBloc, ProductState>(
                       builder: (context, state) {
 
-                        List<Category> categories =
-                            state.categories == null
-                            ? [Category(name: selectValue)]
-                        : state.categories;
 
-                        String catval = categories == null ? selectValue : categories[0].name;
+                        List<Category> subCategories = [];
 
-                        return DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: catval,
-                            items: categories.map((Category category) {
-                              return DropdownMenuItem<String>(
-                                value: category.name,
-                                child: Text(category.name),
-                              );
-                            }).toList(),
-                            onChanged: (var item) {},
-                          ),
-                        );
+
+                        if(state.categories != null && state.filter.catagory.isSubCategory == true){
+                          subCategories.add(Category(name: selectValue));
+                          subCategories.addAll(state.categories.where(
+                                  (x) => (state.filter.catagory.catId != null && x.uId == state.filter.catagory.catId && x.isEnabled == true)).toList());
+                        }else{
+                          subCategories = [Category(name: selectValue)];
+                        }
+
+                        if ((state is ProductLoaded && state.filter != null)) {
+
+                          return DropdownButtonHideUnderline(
+                            child: DropdownButton<Category>(
+                              value: state.filter.subCategory,
+                              items: subCategories.map((Category category) {
+                                return DropdownMenuItem<Category>(
+                                  value: category,
+                                  child: Text(category.name),
+                                );
+                              }).toList(),
+                              onChanged: (Category item) {
+                                context
+                                    .read<ProductBloc>()
+                                    .add(SubCategoryFilterUpdated(subCategory: item));
+                              },
+                            ),
+                          );
+                        } else {
+                          return DropdownButtonHideUnderline(
+                            child: DropdownButton<Category>(
+                              value: Category(name:selectValue),
+                              items: [Category(name: selectValue)].map((Category category) {
+                                return DropdownMenuItem<Category>(
+                                  value: category,
+                                  child: Text(category.name),
+                                );
+                              }).toList(),
+                              onChanged: (var item) {
+                              },
+                            ),
+                          );
+                        }
                       },
                     )),
 
@@ -377,23 +406,31 @@ class HomeScreen extends StatelessWidget {
                   height: 10,
                 ),
 
-                ElevatedButton(
-                  child: Text("Done",
-                      style: TextStyle(
-                          color: appWhite,
-                          fontSize: SizeConfig.blockSizeHorizontal * 4,
-                          fontWeight: FontWeight.bold)),
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.blue,
-                    padding: EdgeInsets.symmetric(
-                        vertical: SizeConfig.blockSizeVertical * 1,
-                        horizontal: SizeConfig.blockSizeHorizontal * 3),
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      child: Text("Done",
+                          style: TextStyle(
+                              color: appWhite,
+                              fontSize: SizeConfig.blockSizeHorizontal * 4,
+                              fontWeight: FontWeight.bold)),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        context.read<ProductBloc>().add(UpdateFilters());
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue,
+                        padding: EdgeInsets.symmetric(
+                            vertical: SizeConfig.blockSizeVertical * 1,
+                            horizontal: SizeConfig.blockSizeHorizontal * 10),
+                      ),
+                    ),
+                  ],
                 ),
 
                 SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
               ],
             ),

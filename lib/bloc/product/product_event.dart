@@ -19,30 +19,26 @@ class UpdateProducts extends ProductEvent {
 }
 
 class CategoryFilterUpdated extends ProductEvent {
-  final String category;
+  final Category category;
 
-  const CategoryFilterUpdated({this.category = ""});
-
-  @override
-  List<Object> get props => [category];
-}
-
-class AddCategoryList extends ProductEvent {
-  List<Category> category;
-
-  AddCategoryList({this.category});
+  CategoryFilterUpdated({this.category});
 
   @override
   List<Object> get props => [category];
 }
 
-// class SubCatagoryFilterUpdated extends ProductEvent {
-//   final PriceFilter priceFilter;
-//
-//   const PriceFilterUpdated({
-//     required this.priceFilter,
-//   });
-//
-//   @override
-//   List<Object?> get props => [priceFilter];
-// }
+class SubCategoryFilterUpdated extends ProductEvent {
+  final Category subCategory;
+
+  SubCategoryFilterUpdated({this.subCategory});
+
+  @override
+  List<Object> get props => [subCategory];
+}
+class UpdateFilters extends ProductEvent {
+
+  @override
+  List<Object> get props => [];
+}
+
+

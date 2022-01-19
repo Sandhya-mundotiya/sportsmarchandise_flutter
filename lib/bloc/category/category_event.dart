@@ -13,11 +13,7 @@ class UpdateCategories extends CategoryEvent {
 
 
   UpdateCategories({List<Category> categories}){
-
-    List<Category> categoriesTemp = [Category(name: selectValue)];
-
-    categoriesTemp.addAll(categories);
-    super.categories = categoriesTemp;
+    super.categories = categories;
   }
 
   @override
