@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:merch/admin/home/cubid/product_detail_cubid.dart';
+import 'package:merch/cubid/product/product_detail_cubid.dart';
 import 'package:merch/constants/app_color.dart';
 import 'package:merch/constants/utils/size_config.dart';
 import 'package:merch/models/product_model.dart';

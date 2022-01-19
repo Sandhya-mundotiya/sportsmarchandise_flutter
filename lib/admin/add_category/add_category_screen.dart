@@ -152,6 +152,7 @@ class AddCategoryScreen extends StatelessWidget {
       ),
     );
   }
+
  Widget categoryListItem(context, Category category){
     return InkWell(
       onTap: (){

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:merch/admin/home/filters_product_controller.dart';
 import 'package:merch/admin/home/views/home_screen.dart';
 import 'package:merch/admin/schools_list/schools_list_controller.dart';
 import 'package:merch/bloc/school/school_bloc.dart';
@@ -45,6 +46,7 @@ class SchoolsListScreen extends StatelessWidget{
     return InkWell(
       onTap: (){
         SchoolData.schoolId=school.uid;
+        getIt.registerSingleton<FiltersProductModel>(FiltersProductController());
         Navigator.push(context,MaterialPageRoute(builder: (context) => HomeScreen(schoolId: school.uid)));
       },
       child: Row(

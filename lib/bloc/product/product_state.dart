@@ -1,7 +1,11 @@
 part of 'product_bloc.dart';
 
 abstract class ProductState extends Equatable {
-  const ProductState();
+   ProductState();
+
+  List<Product> products;
+  Filters filter;
+   List<Category> categories;
 
   @override
   List<Object> get props => [];
@@ -10,10 +14,18 @@ abstract class ProductState extends Equatable {
 class ProductLoading extends ProductState {}
 
 class ProductLoaded extends ProductState {
-  final List<Product> products;
 
-  ProductLoaded({this.products = const <Product>[]});
+  ProductLoaded({List<Product> products,Filters filter,List<Category> categories}){
+    super.products = products;
+    super.filter = filter;
+    super.categories = categories;
+  }
 
   @override
-  List<Object> get props => [products];
+  List<Object> get props => [products,filter];
 }
+
+
+
+
+
