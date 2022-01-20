@@ -58,7 +58,6 @@ class ProductDetailsScreen extends StatelessWidget {
                                 height: SizeConfig.blockSizeVertical * 20,
                                 width: SizeConfig.blockSizeHorizontal * 70,
                                 placeholder: (context, url) => Container(
-                                  // padding: EdgeInsets.only(top: SizeConfig.blockSizeVertical*25,left: SizeConfig.blockSizeHorizontal*4,right: SizeConfig.blockSizeVertical*4),
                                   child: Shimmer.fromColors(
                                     baseColor: Colors.grey[300],
                                     highlightColor: Colors.grey[100],
