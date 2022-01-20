@@ -32,13 +32,13 @@ class ProductDetailsScreen extends StatelessWidget {
                   // aspectRatio: 16 / 9,
                   // viewportFraction: 0.8,
                     initialPage: 0,
-                    enableInfiniteScroll: true,
+                    enableInfiniteScroll: false,
                     reverse: false,
-                    // autoPlay: true,
+                    autoPlay: true,
                     autoPlayInterval: Duration(seconds: 3),
                     autoPlayAnimationDuration: Duration(milliseconds: 800),
                     autoPlayCurve: Curves.fastOutSlowIn,
-                    // enlargeCenterPage: true,
+                     enlargeCenterPage: true,
                     scrollDirection: Axis.horizontal,
                     onPageChanged: (index, reason) {
                       //_current = index;
@@ -58,7 +58,7 @@ class ProductDetailsScreen extends StatelessWidget {
                                 imageUrl: image,
                                 fit: BoxFit.fill,
                                 height: SizeConfig.blockSizeVertical * 20,
-                                width: SizeConfig.blockSizeHorizontal * 50,
+                                width: SizeConfig.blockSizeHorizontal * 70,
                                 placeholder: (context, url) => Container(
                                   // padding: EdgeInsets.only(top: SizeConfig.blockSizeVertical*25,left: SizeConfig.blockSizeHorizontal*4,right: SizeConfig.blockSizeVertical*4),
                                   child: Shimmer.fromColors(
