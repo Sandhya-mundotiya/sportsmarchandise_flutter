@@ -6,16 +6,14 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:merch/admin/add_item/add_product.dart';
 import 'package:merch/admin/add_item/add_product_controller.dart';
-import 'package:merch/bloc/category/category_bloc.dart';
 import 'package:merch/constants/string_constant.dart';
-import 'package:merch/cubid/product/product_detail_cubid.dart';
-import 'package:merch/admin/home/views/product_details_screen.dart';
+import 'package:merch/admin/product_details/product_detail_cubid.dart';
+import 'package:merch/admin/product_details/product_details_screen.dart';
 import 'package:merch/bloc/product/product_bloc.dart';
 import 'package:merch/constants/app_color.dart';
 import 'package:merch/constants/utils/size_config.dart';
 import 'package:merch/main.dart';
 import 'package:merch/models/category_model.dart';
-import 'package:merch/admin/home/filters_product_controller.dart';
 import 'package:merch/models/product_model.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -23,13 +21,10 @@ class HomeScreen extends StatelessWidget {
   HomeScreen({Key key, this.schoolId}) : super(key: key);
   String schoolId;
 
-  var controller = getIt<FiltersProductModel>();
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        getIt.unregister<FiltersProductModel>();
         Navigator.pop(context);
         return;
       },
@@ -43,8 +38,7 @@ class HomeScreen extends StatelessWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          AddProductScreen(schoolId: schoolId)));
+                      builder: (context) => AddProductScreen(schoolId: schoolId)));
             },
             child: const Icon(Icons.add, color: Colors.white)),
         appBar: AppBar(
@@ -244,18 +238,17 @@ class HomeScreen extends StatelessWidget {
                 ),
 
                 //Catagory
-                Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 20),
-                  child: Text(
-                    "Catagory",
+                const Padding(
+                  padding:  EdgeInsets.only(left: 10, right: 10, top: 20),
+                  child: Text("Catagory",
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ),
-                Container(
+                 Container(
                     height: 40,
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    decoration: ShapeDecoration(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    decoration:const ShapeDecoration(
                       color: Colors.white,
                       shape: RoundedRectangleBorder(
                         side: BorderSide(width: 1.0, style: BorderStyle.solid),
@@ -278,7 +271,7 @@ class HomeScreen extends StatelessWidget {
                         if ((state is ProductLoaded && state.filter != null)) {
                           return DropdownButtonHideUnderline(
                             child: DropdownButton<Category>(
-                              value: state.filter.catagory,
+                              value: state.filter.category,
                               disabledHint: Text(selectValue),
                               items: categories.map((Category category) {
                                 return DropdownMenuItem<Category>(
@@ -312,7 +305,7 @@ class HomeScreen extends StatelessWidget {
                     )),
 
                 //Sub Catagory
-                Padding(
+               const  Padding(
                   padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
                   child: Text(
                     "Sub Catagory",
@@ -321,9 +314,9 @@ class HomeScreen extends StatelessWidget {
                 ),
                 Container(
                     height: 40,
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    decoration: ShapeDecoration(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    decoration:const  ShapeDecoration(
                       color: Colors.white,
                       shape: RoundedRectangleBorder(
                         side: BorderSide(width: 1.0, style: BorderStyle.solid),
@@ -338,8 +331,8 @@ class HomeScreen extends StatelessWidget {
                           subCategories.add(Category(name: selectValue));
                           subCategories.addAll(state.categories
                               .where((x) =>
-                                  (state.filter.catagory.catId != null &&
-                                      x.catId == state.filter.catagory.uId))
+                                  (state.filter.category.catId != null &&
+                                      x.catId == state.filter.category.uId))
                               .toList());
                         } else {
                           subCategories = [Category(name: selectValue)];
@@ -365,8 +358,8 @@ class HomeScreen extends StatelessWidget {
                         } else {
                           return DropdownButtonHideUnderline(
                             child: DropdownButton<Category>(
-                              value: Category(name: selectValue),
-                              items: [Category(name: selectValue)]
+                              value:const Category(name: selectValue),
+                              items: [const Category(name: selectValue)]
                                   .map((Category category) {
                                 return DropdownMenuItem<Category>(
                                   value: category,
@@ -381,7 +374,7 @@ class HomeScreen extends StatelessWidget {
                     )),
 
                 //Created Date
-                Padding(
+                const  Padding(
                   padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
                   child: Text(
                     " Created Date",
@@ -391,9 +384,9 @@ class HomeScreen extends StatelessWidget {
 
                 Container(
                   height: 40,
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                  decoration: ShapeDecoration(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  decoration:const ShapeDecoration(
                     color: Colors.white,
                     shape: RoundedRectangleBorder(
                       side: BorderSide(width: 1.0, style: BorderStyle.solid),
@@ -410,7 +403,7 @@ class HomeScreen extends StatelessWidget {
                             _selectDate(context);
                           },
                           readOnly: true,
-                          decoration: InputDecoration(
+                          decoration:const InputDecoration(
                               contentPadding:
                                   EdgeInsets.only(bottom: 10, top: 10),
                               border: InputBorder.none,
@@ -418,7 +411,7 @@ class HomeScreen extends StatelessWidget {
                     },
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
 
@@ -445,7 +438,7 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
 
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
               ],

@@ -4,10 +4,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:merch/admin/home/filters.dart';
+import 'package:merch/admin/home/models/filters.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
 import 'package:merch/constants/string_constant.dart';
-import 'package:merch/admin/home/filters_product_controller.dart';
 import 'package:merch/models/category_model.dart';
 import 'package:merch/models/product_model.dart';
 import 'package:merch/repositories/product/product_repository.dart';
@@ -22,18 +21,11 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   final CategoryBloc categoryBloc;
 
-  ProductBloc(
-      {ProductRepository productRepository,
-      @required CategoryBloc categoryBloc})
-      : _productRepository = productRepository,
-        this.categoryBloc = categoryBloc,
+  ProductBloc({ProductRepository productRepository,@required this.categoryBloc}): _productRepository = productRepository,
         super(ProductLoading()) {
-    categorySubscription =
-        categoryBloc.stream.listen((CategoryState categoryState) {
-      print("CategoryList");
+    categorySubscription = categoryBloc.stream.listen((CategoryState categoryState) {
       if (categoryState != null && categoryState.categories != null) {
         categoryBloc.state.categories = categoryState.categories;
-        print(categoryState.categories);
       }
     });
   }
@@ -54,7 +46,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     if (event is SubCategoryFilterUpdated) {
       yield ProductLoaded(
         filter: Filters(
-            subCategory: event.subCategory, catagory: state.filter.catagory,
+            subCategory: event.subCategory, category: state.filter.category,
             createdDateController: state.filter.createdDateController,
             createdDate: state.filter.createdDate),
         categories: state.categories,
@@ -72,7 +64,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     if (event is CreatedDateFilterUpdated) {
       yield ProductLoaded(
         filter: Filters(
-            subCategory: state.filter.subCategory, catagory: state.filter.catagory, createdDateController: state.filter
+            subCategory: state.filter.subCategory, category: state.filter.category, createdDateController: state.filter
             .createdDateController,createdDate: event.createdDate),
         categories: state.categories,
         products: state.products,
@@ -91,10 +83,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
           state.filter.subCategory.catId != null &&
           state.filter.subCategory.catId != "") {
         catId = state.filter.subCategory.uId;
-      } else if (state.filter.catagory != null &&
-          state.filter.catagory.uId != null &&
-          state.filter.catagory.uId != "") {
-        catId = state.filter.catagory.uId;
+      } else if (state.filter.category != null &&
+          state.filter.category.uId != null &&
+          state.filter.category.uId != "") {
+        catId = state.filter.category.uId;
       }
 
       if(state.filter.createdDate != null && state.filter.createdDate != ""){
@@ -120,10 +112,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         state.filter.subCategory.catId != null &&
         state.filter.subCategory.catId != "") {
       catId = state.filter.subCategory.uId;
-    } else if (state.filter.catagory != null &&
-        state.filter.catagory.uId != null &&
-        state.filter.catagory.uId != "") {
-      catId = state.filter.catagory.uId;
+    } else if (state.filter.category != null &&
+        state.filter.category.uId != null &&
+        state.filter.category.uId != "") {
+      catId = state.filter.category.uId;
     }
 
     _productSubscription =
@@ -137,14 +129,14 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   Stream<ProductState> _mapUpdateProductsToState(UpdateProducts event) async* {
     if (state.filter != null &&
         state.filter.subCategory != null &&
-        state.filter.catagory != null && state.filter.createdDateController != null && state.filter.createdDate != null) {
+        state.filter.category != null && state.filter.createdDateController != null && state.filter.createdDate != null) {
       yield ProductLoaded(
           categories: categoryBloc.state.categories,
           products: event.products,
           filter: Filters(
               subCategory:
-                  state.filter.subCategory ?? Category(name: selectValue),
-              catagory: state.filter.catagory ?? Category(name: selectValue),
+                  state.filter.subCategory ?? const Category(name: selectValue),
+              category: state.filter.category ?? const Category(name: selectValue),
             createdDate: state.filter.createdDate ?? "",
               createdDateController: state.filter.createdDateController ?? TextEditingController()
           ));
@@ -153,8 +145,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
           categories: categoryBloc.state.categories,
           products: event.products,
           filter: Filters(
-              subCategory: Category(name: selectValue),
-              catagory: Category(name: selectValue),
+              subCategory: const Category(name: selectValue),
+              category: const Category(name: selectValue),
               createdDate: "",
               createdDateController: TextEditingController()));
     }
@@ -166,8 +158,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   ) async* {
     yield ProductLoaded(
       filter: Filters(
-          catagory: event.category,
-          subCategory: Category(name: selectValue),
+          category: event.category,
+          subCategory: const Category(name: selectValue),
         createdDate: state.filter.createdDate,
         createdDateController: state.filter.createdDateController
       ),
@@ -177,29 +169,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }
 
   @override
-  void onEvent(ProductEvent event) {
-    // TODO: implement onEvent
-    super.onEvent(event);
-    print(event);
-  }
-
-  @override
-  void onTransition(Transition<ProductEvent, ProductState> transition) {
-    // TODO: implement onTransition
-    super.onTransition(transition);
-    print(transition);
-  }
-
-  @override
-  void onChange(Change<ProductState> change) {
-    // TODO: implement onChange
-    super.onChange(change);
-    print(change);
-  }
-
-  @override
   Future<void> close() {
-    // TODO: implement close
     categorySubscription.cancel();
     _productSubscription.cancel();
     return super.close();

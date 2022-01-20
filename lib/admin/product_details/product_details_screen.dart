@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:merch/cubid/product/product_detail_cubid.dart';
+import 'package:merch/admin/product_details/product_detail_cubid.dart';
 import 'package:merch/constants/app_color.dart';
 import 'package:merch/constants/utils/size_config.dart';
 import 'package:merch/models/product_model.dart';
@@ -17,7 +17,7 @@ class ProductDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("View Product"),
+        title: const Text("View Product"),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -34,9 +34,7 @@ class ProductDetailsScreen extends StatelessWidget {
                     initialPage: 0,
                     enableInfiniteScroll: false,
                     reverse: false,
-                    autoPlay: true,
-                    autoPlayInterval: Duration(seconds: 3),
-                    autoPlayAnimationDuration: Duration(milliseconds: 800),
+                    autoPlayInterval:const Duration(seconds: 3),
                     autoPlayCurve: Curves.fastOutSlowIn,
                      enlargeCenterPage: true,
                     scrollDirection: Axis.horizontal,
@@ -73,7 +71,7 @@ class ProductDetailsScreen extends StatelessWidget {
                                           Container(
                                             width: SizeConfig
                                                 .blockSizeHorizontal *
-                                                50,
+                                                70,
                                             height: SizeConfig
                                                 .blockSizeVertical *
                                                 20,
@@ -99,7 +97,7 @@ class ProductDetailsScreen extends StatelessWidget {
                         return Container(
                           width: 8.0,
                           height: 8.0,
-                          margin: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.symmetric(
                               vertical: 4.0, horizontal: 2.0),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
