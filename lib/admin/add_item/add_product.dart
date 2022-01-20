@@ -112,9 +112,9 @@ class AddProductScreen extends StatelessWidget {
                       else if(controller.categoryController.text.isEmpty){
                         snac("Please select category",error: true);
                       }
-                      else if(controller.subCategoryController.text.isEmpty){
-                        snac("Please select Subcategory",error: true);
-                      }
+                      // else if(controller.subCategoryController.text.isEmpty){
+                      //   snac("Please select Subcategory",error: true);
+                      // }
                       else if(controller.descController.text.isEmpty) {
                         snac("Please type description",error: true);
                       }

@@ -35,7 +35,23 @@ class SubCategoryFilterUpdated extends ProductEvent {
   @override
   List<Object> get props => [subCategory];
 }
+
+class CreatedDateFilterUpdated extends ProductEvent {
+  final String createdDate;
+
+  CreatedDateFilterUpdated({this.createdDate});
+
+  @override
+  List<Object> get props => [createdDate];
+}
+
 class UpdateFilters extends ProductEvent {
+
+  @override
+  List<Object> get props => [];
+}
+
+class ClearFilters extends ProductEvent {
 
   @override
   List<Object> get props => [];

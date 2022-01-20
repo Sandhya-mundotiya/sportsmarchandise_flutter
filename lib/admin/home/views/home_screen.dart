@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:intl/intl.dart';
 import 'package:merch/admin/add_item/add_product.dart';
 import 'package:merch/admin/add_item/add_product_controller.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
@@ -36,6 +37,9 @@ class HomeScreen extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
             onPressed: () {
               getIt.registerSingleton<AddProductModel>(AddProductController());
+              context
+                  .read<ProductBloc>()
+                  .add(ClearFilters());
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -227,6 +231,9 @@ class HomeScreen extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         Navigator.pop(context);
+                        context
+                            .read<ProductBloc>()
+                            .add(ClearFilters());
                       },
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
@@ -257,15 +264,14 @@ class HomeScreen extends StatelessWidget {
                     ),
                     child: BlocBuilder<ProductBloc, ProductState>(
                       builder: (context, state) {
-
                         List<Category> categories = [];
 
-
-                        if(state.categories != null){
+                        if (state.categories != null) {
                           categories.add(Category(name: selectValue));
-                          categories.addAll(state.categories.where(
-                                  (x) => x.catId != "").toList());
-                        }else{
+                          categories.addAll(state.categories
+                              .where((x) => x.catId == "")
+                              .toList());
+                        } else {
                           categories = [Category(name: selectValue)];
                         }
 
@@ -290,16 +296,15 @@ class HomeScreen extends StatelessWidget {
                         } else {
                           return DropdownButtonHideUnderline(
                             child: DropdownButton<Category>(
-                         value: Category(name:selectValue),
-                              items: [Category(name: selectValue)].map((Category category) {
+                              value: Category(name: selectValue),
+                              items: [Category(name: selectValue)]
+                                  .map((Category category) {
                                 return DropdownMenuItem<Category>(
                                   value: category,
                                   child: Text(category.name),
                                 );
                               }).toList(),
-                              onChanged: (var item) {
-
-                              },
+                              onChanged: (var item) {},
                             ),
                           );
                         }
@@ -327,21 +332,20 @@ class HomeScreen extends StatelessWidget {
                     ),
                     child: BlocBuilder<ProductBloc, ProductState>(
                       builder: (context, state) {
-
-
                         List<Category> subCategories = [];
 
-
-                        if(state.categories != null && state.filter.catagory.isSubCategory == true){
+                        if (state.categories != null) {
                           subCategories.add(Category(name: selectValue));
-                          subCategories.addAll(state.categories.where(
-                                  (x) => (state.filter.catagory.catId != null && x.uId == state.filter.catagory.catId && x.isEnabled == true)).toList());
-                        }else{
+                          subCategories.addAll(state.categories
+                              .where((x) =>
+                                  (state.filter.catagory.catId != null &&
+                                      x.catId == state.filter.catagory.uId))
+                              .toList());
+                        } else {
                           subCategories = [Category(name: selectValue)];
                         }
 
                         if ((state is ProductLoaded && state.filter != null)) {
-
                           return DropdownButtonHideUnderline(
                             child: DropdownButton<Category>(
                               value: state.filter.subCategory,
@@ -352,24 +356,24 @@ class HomeScreen extends StatelessWidget {
                                 );
                               }).toList(),
                               onChanged: (Category item) {
-                                context
-                                    .read<ProductBloc>()
-                                    .add(SubCategoryFilterUpdated(subCategory: item));
+                                context.read<ProductBloc>().add(
+                                    SubCategoryFilterUpdated(
+                                        subCategory: item));
                               },
                             ),
                           );
                         } else {
                           return DropdownButtonHideUnderline(
                             child: DropdownButton<Category>(
-                              value: Category(name:selectValue),
-                              items: [Category(name: selectValue)].map((Category category) {
+                              value: Category(name: selectValue),
+                              items: [Category(name: selectValue)]
+                                  .map((Category category) {
                                 return DropdownMenuItem<Category>(
                                   value: category,
                                   child: Text(category.name),
                                 );
                               }).toList(),
-                              onChanged: (var item) {
-                              },
+                              onChanged: (var item) {},
                             ),
                           );
                         }
@@ -396,11 +400,23 @@ class HomeScreen extends StatelessWidget {
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
                     ),
                   ),
-                  child: TextField(
-                      decoration: InputDecoration(
-                          contentPadding: EdgeInsets.only(bottom: 10, top: 10),
-                          border: InputBorder.none,
-                          hintText: 'Select')),
+                  child: BlocBuilder<ProductBloc, ProductState>(
+                    builder: (context, state) {
+                      return TextField(
+                          controller: state
+                              .filter
+                              .createdDateController,
+                          onTap: () {
+                            _selectDate(context);
+                          },
+                          readOnly: true,
+                          decoration: InputDecoration(
+                              contentPadding:
+                                  EdgeInsets.only(bottom: 10, top: 10),
+                              border: InputBorder.none,
+                              hintText: 'Select'));
+                    },
+                  ),
                 ),
                 SizedBox(
                   height: 10,
@@ -438,15 +454,20 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Future<void> _selectDate(BuildContext context) async {
-  //   final DateTime picked = await showDatePicker(
-  //       context: context,
-  //       initialDate: selectedDate,
-  //       firstDate: DateTime(2015, 8),
-  //       lastDate: DateTime(2101));
-  //   if (picked != null && picked != selectedDate)
-  //     {
-  //
-  //     }
-  // }
+  Future<void> _selectDate(BuildContext context) async {
+    var currentDate = DateTime.now();
+
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: currentDate,
+        firstDate: DateTime(currentDate.year - 200),
+        lastDate: currentDate);
+    if (picked != null /*&& picked != selectedDate*/) {
+      var selectedDate = DateFormat('dd-MM-yyyy').format(picked);
+
+      context
+          .read<ProductBloc>()
+          .add(CreatedDateFilterUpdated(createdDate: "${selectedDate}"));
+    }
+  }
 }

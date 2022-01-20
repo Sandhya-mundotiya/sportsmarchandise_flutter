@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:merch/admin/add_category/add_category_controller.dart';
+import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/firestore_constants.dart';
 import 'package:merch/constants/utils/school.dart';
 import 'package:merch/models/category_model.dart';
@@ -20,4 +22,20 @@ class CategoryRepository extends BaseCategoryRepository {
       return snapshot.docs.map((doc) => Category.fromSnapshot(doc)).toList();
     });
   }
+
+  @override
+  addCategories({Category categoryOb,String schoolId,AddCategoryController controller}) {
+    CollectionReference reference = _firebaseFirestore.collection(SCHOOL_TABLE).doc(schoolId).collection(CATEGORY_TABLE);
+
+     reference
+        .add(categoryOb.toJson())
+        .then((value){
+          print("category added success");
+      controller.descController.text="";
+      controller.nameController.text="";
+       snac("Category Created",success: true);
+    })
+        .catchError((error) => print("Failed to add Category: $error"));
+  }
+
 }

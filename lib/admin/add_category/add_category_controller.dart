@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/firestore_constants.dart';
 import 'package:merch/models/category_model.dart';
+import 'package:merch/repositories/category/category_repository.dart';
 
 abstract class AddCategoryModel {
   AddCategoryModel(){
@@ -25,23 +28,18 @@ class AddCategoryController extends AddCategoryModel {
   bool isSubcategory;
   AddCategoryController({this.isSubcategory});
   Future<void> addCat(String schoolId) {
-    CollectionReference reference = FirebaseFirestore.instance.collection(SCHOOL_TABLE).doc(schoolId).collection(CATEGORY_TABLE);
 
     var categoryOb = Category(
       isEnabled: true,
       isSubCategory: catValue==2 && categoryController.text.isNotEmpty ?? false,
-        catId: catValue==2 && categoryController.text.isNotEmpty?selectedCategory.uId:"",
-        description: descController.text,
-        name: nameController.text,
+      catId: catValue==2 && categoryController.text.isNotEmpty?selectedCategory.uId:"",
+      description: descController.text,
+      name: nameController.text,
     );
-    return reference
-        .add(categoryOb.toJson())
-        .then((value){
-      descController.text="";
-      nameController.text="";
-      snac("Category Created",success: true);
-    })
-        .catchError((error) => print("Failed to add Category: $error"));
+
+    CategoryRepository categoryRepo = CategoryRepository();
+     categoryRepo.addCategories(schoolId: schoolId,categoryOb: categoryOb,controller: this);
+
   }
 
   @override

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:merch/admin/home/filters.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
 import 'package:merch/constants/string_constant.dart';
@@ -21,13 +22,19 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   final CategoryBloc categoryBloc;
 
-  ProductBloc({ProductRepository productRepository,@required CategoryBloc categoryBloc})
-      : _productRepository = productRepository, this.categoryBloc = categoryBloc,
-        super(ProductLoading()){
-    categorySubscription = categoryBloc.stream.listen((CategoryState categoryState) {
+  ProductBloc(
+      {ProductRepository productRepository,
+      @required CategoryBloc categoryBloc})
+      : _productRepository = productRepository,
+        this.categoryBloc = categoryBloc,
+        super(ProductLoading()) {
+    categorySubscription =
+        categoryBloc.stream.listen((CategoryState categoryState) {
       print("CategoryList");
-      categoryBloc.state.categories = categoryState.categories;
-      print(categoryState.categories);
+      if (categoryState != null && categoryState.categories != null) {
+        categoryBloc.state.categories = categoryState.categories;
+        print(categoryState.categories);
+      }
     });
   }
 
@@ -36,70 +43,138 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     ProductEvent event,
   ) async* {
     if (event is LoadProducts) {
-
-      if(state.filter.catagory.catId != null && state.filter.catagory.catId != ""){
-        yield* _mapLoadProductsWithCatFilter();
-      }else{
-        yield* _mapLoadProductsToState();
-      }
-
+        yield* _mapLoadProductsToState(state);
     }
     if (event is UpdateProducts) {
       yield* _mapUpdateProductsToState(event);
     }
     if (event is CategoryFilterUpdated) {
-      yield* _mapCategoryFilterUpdatedToState(event,state);
+      yield* _mapCategoryFilterUpdatedToState(event, state);
     }
     if (event is SubCategoryFilterUpdated) {
-      yield ProductLoaded(filter: Filters(subCategory: event.subCategory, catagory: state.filter.catagory), categories: state.categories, products: state.products,);
+      yield ProductLoaded(
+        filter: Filters(
+            subCategory: event.subCategory, catagory: state.filter.catagory,
+            createdDateController: state.filter.createdDateController,
+            createdDate: state.filter.createdDate),
+        categories: state.categories,
+        products: state.products,
+      );
     }
     if (event is UpdateFilters) {
-       add(LoadProducts());
+      add(LoadProducts());
+    }
+    if (event is ClearFilters) {
+      state.filter = Filters(createdDateController: TextEditingController(),createdDate: "");
+      add(LoadProducts());
     }
 
-
+    if (event is CreatedDateFilterUpdated) {
+      yield ProductLoaded(
+        filter: Filters(
+            subCategory: state.filter.subCategory, catagory: state.filter.catagory, createdDateController: state.filter
+            .createdDateController,createdDate: event.createdDate),
+        categories: state.categories,
+        products: state.products,
+      );
+    }
   }
 
-  Stream<ProductState> _mapLoadProductsToState() async* {
+  Stream<ProductState> _mapLoadProductsToState(ProductState state) async* {
     _productSubscription?.cancel();
-    _productSubscription = _productRepository.getAllProducts().listen(
+
+    String catId = "";
+    int createdDate = 0;
+
+    if(state.filter != null){
+      if (state.filter.subCategory != null &&
+          state.filter.subCategory.catId != null &&
+          state.filter.subCategory.catId != "") {
+        catId = state.filter.subCategory.uId;
+      } else if (state.filter.catagory != null &&
+          state.filter.catagory.uId != null &&
+          state.filter.catagory.uId != "") {
+        catId = state.filter.catagory.uId;
+      }
+
+      if(state.filter.createdDate != null && state.filter.createdDate != ""){
+        var localDate = DateFormat("dd-MM-yyyy").parse(state.filter.createdDate);
+        createdDate = localDate.microsecondsSinceEpoch;
+      }
+    }
+
+    _productSubscription = _productRepository.getAllProducts(catId: catId,createdDate: createdDate).listen(
           (products) => add(
             UpdateProducts(products),
           ),
         );
   }
 
-  Stream<ProductState> _mapLoadProductsWithCatFilter() async* {
+  Stream<ProductState> _mapLoadProductsWithCatFilter(
+      ProductState state) async* {
     _productSubscription?.cancel();
-    _productSubscription = _productRepository.getAllProducts(catId: state.filter.catagory.catId).listen(
-          (products) => add(
-        UpdateProducts(products),
-      ),
-    );
+
+    String catId = "";
+
+    if (state.filter.subCategory != null &&
+        state.filter.subCategory.catId != null &&
+        state.filter.subCategory.catId != "") {
+      catId = state.filter.subCategory.uId;
+    } else if (state.filter.catagory != null &&
+        state.filter.catagory.uId != null &&
+        state.filter.catagory.uId != "") {
+      catId = state.filter.catagory.uId;
+    }
+
+    _productSubscription =
+        _productRepository.getAllProducts(catId: catId).listen(
+              (products) => add(
+                UpdateProducts(products),
+              ),
+            );
   }
 
-
   Stream<ProductState> _mapUpdateProductsToState(UpdateProducts event) async* {
-    yield ProductLoaded(categories: categoryBloc.state.categories,products: event.products,
-        filter: Filters(subCategory: state.filter.subCategory ?? Category(name: selectValue),catagory: state.filter.catagory ?? Category(name: selectValue)));
+    if (state.filter != null &&
+        state.filter.subCategory != null &&
+        state.filter.catagory != null && state.filter.createdDateController != null && state.filter.createdDate != null) {
+      yield ProductLoaded(
+          categories: categoryBloc.state.categories,
+          products: event.products,
+          filter: Filters(
+              subCategory:
+                  state.filter.subCategory ?? Category(name: selectValue),
+              catagory: state.filter.catagory ?? Category(name: selectValue),
+            createdDate: state.filter.createdDate ?? "",
+              createdDateController: state.filter.createdDateController ?? TextEditingController()
+          ));
+    } else {
+      yield ProductLoaded(
+          categories: categoryBloc.state.categories,
+          products: event.products,
+          filter: Filters(
+              subCategory: Category(name: selectValue),
+              catagory: Category(name: selectValue),
+              createdDate: "",
+              createdDateController: TextEditingController()));
+    }
   }
 
   Stream<ProductState> _mapCategoryFilterUpdatedToState(
-      CategoryFilterUpdated event,
-      ProductState state,
-      ) async* {
-    yield ProductLoaded(filter:
-    Filters(
-        catagory: event.category,
-      subCategory: Category(name: selectValue)
-    ),
+    CategoryFilterUpdated event,
+    ProductState state,
+  ) async* {
+    yield ProductLoaded(
+      filter: Filters(
+          catagory: event.category,
+          subCategory: Category(name: selectValue),
+        createdDate: state.filter.createdDate,
+        createdDateController: state.filter.createdDateController
+      ),
       categories: state.categories,
-        products: state.products,
-        );
-
+      products: state.products,
+    );
   }
-
-
 
   @override
   void onEvent(ProductEvent event) {
@@ -113,7 +188,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     // TODO: implement onTransition
     super.onTransition(transition);
     print(transition);
-
   }
 
   @override

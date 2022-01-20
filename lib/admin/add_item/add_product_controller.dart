@@ -4,11 +4,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
+import 'package:intl/intl.dart';
+import 'package:merch/admin/add_item/loader_cupid.dart';
 import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/firestore_constants.dart';
 import 'package:merch/constants/utils/school.dart';
 import 'package:merch/models/category_model.dart';
 import 'package:merch/models/product_model.dart';
+import 'package:merch/repositories/product/base_product_repository.dart';
+import 'package:merch/repositories/product/product_repository.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -24,7 +28,6 @@ abstract class AddProductModel {
   var priceController=TextEditingController();
   var categoryController=TextEditingController();
   var subCategoryController=TextEditingController();
-
   var isCategory=false;
   List<Asset> images = <Asset>[];
   var nameFocus=FocusNode();
@@ -49,20 +52,24 @@ class AddProductController extends AddProductModel {
 
   }
 addProductToFirestore(List<String> images,BuildContext context){
+
+
+    var currentDate = DateTime.now();
+  DateTime formattedDate = new DateTime(currentDate.year, currentDate.month, currentDate.day);
+
     var productObj=Product(
         name: nameController.text,
-        catId: subCategoryController.text.isNotEmpty?selectedSubCategory.uId:selectedSubCategory.uId,
+        catId: subCategoryController.text.isNotEmpty?selectedSubCategory.uId:selectedCategory.uId,
         description: descController.text,
-        createdDate: DateTime.now().microsecondsSinceEpoch,
+        createdDate: formattedDate.microsecondsSinceEpoch,
         images: images,
         price: priceController.text,
     );
-    CollectionReference reference = FirebaseFirestore.instance.collection(SCHOOL_TABLE).doc(SchoolData.schoolId).collection(PRODUCT_TABLE);
-    reference.add(productObj.toJson()).then((value)  {
 
-      snac("Product Uploaded Successfully",success: true);
-      Navigator.pop(context);
-    });
+    ProductRepository productRepository= ProductRepository();
+    productRepository.addProduct(productObj: productObj,context: context);
+
+
 }
   Future<List<String>> uploadFiles(List<Asset> _images) async {
     var imageUrls = await Future.wait(_images.map((_image) => uploadFile(_image)));
