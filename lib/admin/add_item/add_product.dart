@@ -181,11 +181,19 @@ class AddProductScreen extends StatelessWidget {
                       );
                     }
                     if (state is CategoryLoaded) {
-                      return state.categories.where((element) => element.catId==(catId ?? "") && element.isEnabled==true).isNotEmpty?ListView(
-                        children: state.categories.where((element) => element.catId==(catId ?? "") && element.isEnabled==true)
-                            .map((category) => categoryListItem(context,category,catId!=null?true:false))
-                            .toList(),
-                      ):const Center(child: Text('No SubCategories Found',style: TextStyle(color: Colors.black),));
+                      if(title == "Category"){
+                        return state.categories.where((element) => element.catId=="" && element.isEnabled==true).isNotEmpty?ListView(
+                          children: state.categories.where((element) => element.catId=="" && element.isEnabled==true)
+                              .map((category) => categoryListItem(context,category,catId!=null?true:false))
+                              .toList(),
+                        ): Center(child: Text('No $title Found',style: TextStyle(color: Colors.black),));
+                      }else{
+                        return state.categories.where((element) => element.catId==catId && element.isEnabled==true).isNotEmpty?ListView(
+                          children: state.categories.where((element) => element.catId==catId  && element.isEnabled==true)
+                              .map((category) => categoryListItem(context,category,catId!=null?true:false))
+                              .toList(),
+                        ): Center(child: Text('No $title Found',style: TextStyle(color: Colors.black),));
+                      }
                     } else {
                       return const Text('Something went wrong.');
                     }
