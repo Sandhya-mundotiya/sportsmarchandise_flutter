@@ -34,6 +34,7 @@ class EditCategoryScreen extends StatelessWidget {
               SizedBox(
                 height: 20,
               ),
+
               BlocBuilder<EditCategoryBloc, EditCategoryState>(
                 builder: (context, state) {
                   List<Category> categoryList = [Category(name: SELECT_VALUE)];
@@ -42,7 +43,7 @@ class EditCategoryScreen extends StatelessWidget {
                     categoryList.addAll(state.categoryList);
                   }
 
-                  return spinnerField((category) {
+                  return categorySearchFiled((category) {
                     context.read<EditCategoryBloc>().add(
                         LoadSelectedCategoryDetail(
                             selctedCatOrSubCat: category));
@@ -52,6 +53,11 @@ class EditCategoryScreen extends StatelessWidget {
                       title: "Select Category / Sub Category");
                 },
               ),
+
+              SizedBox(height: 10,),
+              Divider(height: 5,),
+              SizedBox(height: 15,),
+
               BlocBuilder<EditCategoryBloc, EditCategoryState>(
                 builder: (context, state) {
                   List<Category> categoryList = [Category(name: SELECT_VALUE)];
@@ -156,6 +162,7 @@ class EditCategoryScreen extends StatelessWidget {
     return Stack(children: widgetList);
   }
 
+
   Widget formTextField(
       {String hint,
       TextEditingController controller,
@@ -224,6 +231,59 @@ class EditCategoryScreen extends StatelessWidget {
     )));
   }
 
+  Widget categorySearchFiled(Function onClick(Category value),{Category selectedCategory, List<Category> categoryList, String title}){
+    return Container(
+
+      margin:
+      const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+      padding:
+      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      decoration: ShapeDecoration(
+          shape: RoundedRectangleBorder(
+            side: BorderSide(width: 1.0, style: BorderStyle.solid),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          color: primaryColor),
+      child: Row(
+        children: [
+          Text(
+            "Sort by: ",
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold,color: Colors.white),
+          ),
+          SizedBox(
+            width: 20,
+          ),
+          Expanded(child: Container(
+            height: 40,
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: ShapeDecoration(
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                side: BorderSide(width: 1.0, style: BorderStyle.solid),
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              ),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<Category>(
+                value: selectedCategory,
+                items: categoryList.map((Category category) {
+                  return DropdownMenuItem<Category>(
+                    value: category,
+                    child: Text(category.name),
+                  );
+                }).toList(),
+                onChanged: (Category item) {
+                  onClick(item);
+                },
+              ),
+            ),
+          ))
+        ],
+      ),
+    );
+  }
+
   Widget spinnerField(Function onClick(Category value),
       {Category selectedCategory, List<Category> categoryList, String title}) {
     return BlocBuilder<EditCategoryBloc, EditCategoryState>(
@@ -238,6 +298,7 @@ class EditCategoryScreen extends StatelessWidget {
               child: Text(title),
             ),
             Container(
+              height: 42,
               margin: EdgeInsets.symmetric(
                   horizontal: SizeConfig.blockSizeHorizontal * 2,
                   vertical: SizeConfig.blockSizeVertical * 0.5),
