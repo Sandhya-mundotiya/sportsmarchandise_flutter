@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:merch/admin/add_category/add_category_controller.dart';
@@ -6,26 +5,30 @@ import 'package:merch/admin/add_category/add_category_screen.dart';
 import 'package:merch/admin/add_category/category_cupid.dart';
 import 'package:merch/admin/add_item/assets_cupid.dart';
 import 'package:merch/admin/add_item/loader_cupid.dart';
+import 'package:merch/admin/edit_category/edit_category_screen.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
+import 'package:merch/bloc/edit_category/edit_category_bloc.dart';
 import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/app_color.dart';
+import 'package:merch/constants/string_constant.dart';
 import 'package:merch/constants/utils/size_config.dart';
 import 'package:merch/main.dart';
 import 'package:merch/models/category_model.dart';
+import 'package:merch/repositories/category/category_repository.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
 
 import 'add_product_controller.dart';
 
 class AddProductScreen extends StatelessWidget {
-  AddProductScreen({Key key,this.schoolId}) : super(key: key);
+  AddProductScreen({Key key, this.schoolId}) : super(key: key);
   String schoolId;
-  var controller=getIt<AddProductModel>();
+  var controller = getIt<AddProductModel>();
 
   @override
   Widget build(BuildContext context) {
     List<Widget> widgetList = [];
-    var main= WillPopScope(
-      onWillPop: (){
+    var main = WillPopScope(
+      onWillPop: () {
         getIt.unregister<AddProductModel>();
         context.read<AssetCubit>().clear();
         context.read<LoaderCubit>().hideLoader();
@@ -60,69 +63,98 @@ class AddProductScreen extends StatelessWidget {
                             selectCircleStrokeColor: "#000000",
                           ),
                         ).then((value) {
-                          controller.images=value;
+                          controller.images = value;
                           context.read<AssetCubit>().refresh();
                         });
                       } on Exception catch (e) {
-                       // error = e.toString();
+                        // error = e.toString();
                       }
-                    },text: "Add/Change Images",isExpanded: true),
-
-                    formTextField(controller: controller.nameController,focus: controller.nameFocus,hint: "Name",focusNext: controller.priceFocus),
-                    formTextField(controller: controller.priceController,focus: controller.priceFocus,hint: "Price",focusNext: controller.descFocus),
-
+                    }, text: "Add/Change Images", isExpanded: true),
+                    formTextField(
+                        controller: controller.nameController,
+                        focus: controller.nameFocus,
+                        hint: "Name",
+                        focusNext: controller.priceFocus),
+                    formTextField(
+                        controller: controller.priceController,
+                        focus: controller.priceFocus,
+                        hint: "Price",
+                        focusNext: controller.descFocus),
                     spinnerField(() {
-                      categoryList(context,"Category",  controller.categoryController);
-                    }, hint: "Category",controller: controller.categoryController),
-
-                   spinnerField(() {
-                     categoryList(context,"Subcategory",  controller.subCategoryController,catId: controller.selectedCategory.uId);
-                   }, hint: "Subcategory",controller: controller.subCategoryController),
-
-                    formTextField(controller: controller.descController,focus: controller.descFocus,hint: "Description"),
+                      categoryList(
+                          context, "Category", controller.categoryController);
+                    },
+                        hint: "Category",
+                        controller: controller.categoryController),
+                    spinnerField(() {
+                      categoryList(context, "Subcategory",
+                          controller.subCategoryController,
+                          catId: controller.selectedCategory.uId);
+                    },
+                        hint: "Subcategory",
+                        controller: controller.subCategoryController),
+                    formTextField(
+                        controller: controller.descController,
+                        focus: controller.descFocus,
+                        hint: "Description"),
                     Row(
                       children: [
                         Expanded(
-                          child: appButton((){
-                            getIt.registerSingleton<AddCategoryModel>(AddCategoryController());
+                          child: appButton(() {
+                            getIt.registerSingleton<AddCategoryModel>(
+                                AddCategoryController());
                             context.read<CategoryCubit>().one();
-                            Navigator.push(context,MaterialPageRoute(builder: (context) => AddCategoryScreen(schoolId: schoolId)));
-                          },text: "Add Category",isExpanded: true),
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        AddCategoryScreen(schoolId: schoolId)));
+                          }, text: "Add Category", isExpanded: true),
                         ),
                         Expanded(
-                          child: appButton((){
-                            getIt.registerSingleton<AddCategoryModel>(AddCategoryController(isSubcategory: true));
+                          child: appButton(() {
+                            getIt.registerSingleton<AddCategoryModel>(
+                                AddCategoryController(isSubcategory: true));
                             context.read<CategoryCubit>().two();
-                            Navigator.push(context,MaterialPageRoute(builder: (context) => AddCategoryScreen(schoolId: schoolId)));
-                          },text: "Add SubCategory",isExpanded: true),
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        AddCategoryScreen(schoolId: schoolId)));
+                          }, text: "Add SubCategory", isExpanded: true),
                         )
                       ],
                     ),
-                    appButton(()
-                    {
-                      if(controller.images.isEmpty){
-                        snac("Please upload at least one product image",error: true);
-                      }
-                      else if(controller.nameController.text.isEmpty){
-                        snac("Please type name",error: true);
-                      }
-                      else if(controller.priceController.text.isEmpty){
-                        snac("Please add product price",error: true);
-                      }
-                      else if(controller.categoryController.text.isEmpty){
-                        snac("Please select category",error: true);
+                    appButton(() {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => BlocProvider(
+                                    create: (_) => EditCategoryBloc(categoryBloc: BlocProvider.of<CategoryBloc>(context),categoryRepository: CategoryRepository()),
+                                    child: EditCategoryScreen(),
+                                  )));
+                    }, text: EDIT_CATEGORY, isExpanded: true),
+                    appButton(() {
+                      if (controller.images.isEmpty) {
+                        snac("Please upload at least one product image",
+                            error: true);
+                      } else if (controller.nameController.text.isEmpty) {
+                        snac("Please type name", error: true);
+                      } else if (controller.priceController.text.isEmpty) {
+                        snac("Please add product price", error: true);
+                      } else if (controller.categoryController.text.isEmpty) {
+                        snac("Please select category", error: true);
                       }
                       // else if(controller.subCategoryController.text.isEmpty){
                       //   snac("Please select Subcategory",error: true);
                       // }
-                      else if(controller.descController.text.isEmpty) {
-                        snac("Please type description",error: true);
-                      }
-                      else {
+                      else if (controller.descController.text.isEmpty) {
+                        snac("Please type description", error: true);
+                      } else {
                         context.read<LoaderCubit>().showLoader();
-                        controller.addProduct(schoolId,context);
+                        controller.addProduct(schoolId, context);
                       }
-                    },text: "Add Product",isExpanded: true)
+                    }, text: "Add Product", isExpanded: true)
                   ],
                 ),
               ),
@@ -132,21 +164,21 @@ class AddProductScreen extends StatelessWidget {
       ),
     );
     widgetList.add(main);
-    widgetList.add(
-        BlocBuilder<LoaderCubit, bool>(
-            builder: (context, bool) => bool?loader(): const SizedBox()
-        ));
+    widgetList.add(BlocBuilder<LoaderCubit, bool>(
+        builder: (context, bool) => bool ? loader() : const SizedBox()));
     return Stack(children: widgetList);
   }
 
-  categoryList(BuildContext context,String title, TextEditingController controller,{String catId}){
+  categoryList(
+      BuildContext context, String title, TextEditingController controller,
+      {String catId}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.4,
-        decoration:const BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(25.0),
@@ -158,16 +190,16 @@ class AddProductScreen extends StatelessWidget {
             children: [
               AppBar(
                 centerTitle: true,
-                title: Text(title,style:const TextStyle(color: appWhite)),
+                title: Text(title, style: const TextStyle(color: appWhite)),
                 automaticallyImplyLeading: false,
                 actions: [
                   InkWell(
-                    onTap: (){
+                    onTap: () {
                       Navigator.pop(context);
                     },
                     child: const Padding(
-                      padding:EdgeInsets.all(8.0),
-                      child: Icon(Icons.close,color: appWhite,size: 25),
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(Icons.close, color: appWhite, size: 25),
                     ),
                   ),
                 ],
@@ -181,18 +213,46 @@ class AddProductScreen extends StatelessWidget {
                       );
                     }
                     if (state is CategoryLoaded) {
-                      if(title == "Category"){
-                        return state.categories.where((element) => element.catId=="" && element.isEnabled==true).isNotEmpty?ListView(
-                          children: state.categories.where((element) => element.catId=="" && element.isEnabled==true)
-                              .map((category) => categoryListItem(context,category,catId!=null?true:false))
-                              .toList(),
-                        ): Center(child: Text('No $title Found',style: TextStyle(color: Colors.black),));
-                      }else{
-                        return state.categories.where((element) => element.catId==catId && element.isEnabled==true).isNotEmpty?ListView(
-                          children: state.categories.where((element) => element.catId==catId  && element.isEnabled==true)
-                              .map((category) => categoryListItem(context,category,catId!=null?true:false))
-                              .toList(),
-                        ): Center(child: Text('No $title Found',style: TextStyle(color: Colors.black),));
+                      if (title == "Category") {
+                        return state.categories
+                                .where((element) =>
+                                    element.catId == "" &&
+                                    element.isEnabled == true)
+                                .isNotEmpty
+                            ? ListView(
+                                children: state.categories
+                                    .where((element) =>
+                                        element.catId == "" &&
+                                        element.isEnabled == true)
+                                    .map((category) => categoryListItem(context,
+                                        category, catId != null ? true : false))
+                                    .toList(),
+                              )
+                            : Center(
+                                child: Text(
+                                'No $title Found',
+                                style: TextStyle(color: Colors.black),
+                              ));
+                      } else {
+                        return state.categories
+                                .where((element) =>
+                                    element.catId == catId &&
+                                    element.isEnabled == true)
+                                .isNotEmpty
+                            ? ListView(
+                                children: state.categories
+                                    .where((element) =>
+                                        element.catId == catId &&
+                                        element.isEnabled == true)
+                                    .map((category) => categoryListItem(context,
+                                        category, catId != null ? true : false))
+                                    .toList(),
+                              )
+                            : Center(
+                                child: Text(
+                                'No $title Found',
+                                style: TextStyle(color: Colors.black),
+                              ));
                       }
                     } else {
                       return const Text('Something went wrong.');
@@ -206,55 +266,62 @@ class AddProductScreen extends StatelessWidget {
       ),
     );
   }
-  Widget categoryListItem(context, Category category,bool isSubCat){
-    return InkWell(
-      onTap: (){
-        if(isSubCat){
-          controller.selectedSubCategory=category;
-          controller.subCategoryController.text=category.name;
-        }
-        else{
-          if(controller.selectedCategory!=null && controller.selectedCategory.uId!=category.uId){
-            controller.selectedCategory=category;
-            controller.categoryController.text=category.name;
 
-            controller.selectedSubCategory=const Category();
-            controller.subCategoryController.text="";
+  Widget categoryListItem(context, Category category, bool isSubCat) {
+    return InkWell(
+      onTap: () {
+        if (isSubCat) {
+          controller.selectedSubCategory = category;
+          controller.subCategoryController.text = category.name;
+        } else {
+          if (controller.selectedCategory != null &&
+              controller.selectedCategory.uId != category.uId) {
+            controller.selectedCategory = category;
+            controller.categoryController.text = category.name;
+
+            controller.selectedSubCategory = const Category();
+            controller.subCategoryController.text = "";
           }
         }
         Navigator.pop(context);
       },
       child: Padding(
         padding: EdgeInsets.symmetric(
-            vertical: SizeConfig.blockSizeVertical*1.5,
-            horizontal: SizeConfig.blockSizeHorizontal*2),
-        child: Center(child: Text(category.name,style: TextStyle(fontSize: SizeConfig.blockSizeHorizontal * 3.5,fontWeight: FontWeight.w500,color: appBlack))),
+            vertical: SizeConfig.blockSizeVertical * 1.5,
+            horizontal: SizeConfig.blockSizeHorizontal * 2),
+        child: Center(
+            child: Text(category.name,
+                style: TextStyle(
+                    fontSize: SizeConfig.blockSizeHorizontal * 3.5,
+                    fontWeight: FontWeight.w500,
+                    color: appBlack))),
       ),
     );
   }
 
   Widget productImagesView() {
     return BlocBuilder<AssetCubit, List<Asset>>(
-        builder: (context, assets) => assets!=null && assets.isNotEmpty?Container(
-          height: 170,
-          margin: const EdgeInsets.only(top: 5),
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: List.generate(assets.length, (index) {
-              Asset asset = assets[index];
-              return Container(
-                color: Colors.black,
-                margin: const EdgeInsets.all(3),
-                padding: const EdgeInsets.all(3),
-                child: AssetThumb(
-                  asset: asset,
-                  width: 100,
-                  height: 100,
+        builder: (context, assets) => assets != null && assets.isNotEmpty
+            ? Container(
+                height: 170,
+                margin: const EdgeInsets.only(top: 5),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: List.generate(assets.length, (index) {
+                    Asset asset = assets[index];
+                    return Container(
+                      color: Colors.black,
+                      margin: const EdgeInsets.all(3),
+                      padding: const EdgeInsets.all(3),
+                      child: AssetThumb(
+                        asset: asset,
+                        width: 100,
+                        height: 100,
+                      ),
+                    );
+                  }).toList(),
                 ),
-              );
-            }).toList(),
-          ),
-        ): const SizedBox()
-    );
+              )
+            : const SizedBox());
   }
 }

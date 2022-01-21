@@ -260,19 +260,19 @@ class HomeScreen extends StatelessWidget {
                         List<Category> categories = [];
 
                         if (state.categories != null) {
-                          categories.add(Category(name: selectValue));
+                          categories.add(Category(name: SELECT_VALUE));
                           categories.addAll(state.categories
                               .where((x) => x.catId == "")
                               .toList());
                         } else {
-                          categories = [Category(name: selectValue)];
+                          categories = [Category(name: SELECT_VALUE)];
                         }
 
                         if ((state is ProductLoaded && state.filter != null)) {
                           return DropdownButtonHideUnderline(
                             child: DropdownButton<Category>(
                               value: state.filter.category,
-                              disabledHint: Text(selectValue),
+                              disabledHint: Text(SELECT_VALUE),
                               items: categories.map((Category category) {
                                 return DropdownMenuItem<Category>(
                                   value: category,
@@ -289,8 +289,8 @@ class HomeScreen extends StatelessWidget {
                         } else {
                           return DropdownButtonHideUnderline(
                             child: DropdownButton<Category>(
-                              value: Category(name: selectValue),
-                              items: [Category(name: selectValue)]
+                              value: Category(name: SELECT_VALUE),
+                              items: [Category(name: SELECT_VALUE)]
                                   .map((Category category) {
                                 return DropdownMenuItem<Category>(
                                   value: category,
@@ -328,14 +328,14 @@ class HomeScreen extends StatelessWidget {
                         List<Category> subCategories = [];
 
                         if (state.categories != null) {
-                          subCategories.add(Category(name: selectValue));
+                          subCategories.add(Category(name: SELECT_VALUE));
                           subCategories.addAll(state.categories
                               .where((x) =>
                                   (state.filter.category.catId != null &&
                                       x.catId == state.filter.category.uId))
                               .toList());
                         } else {
-                          subCategories = [Category(name: selectValue)];
+                          subCategories = [Category(name: SELECT_VALUE)];
                         }
 
                         if ((state is ProductLoaded && state.filter != null)) {
@@ -358,8 +358,8 @@ class HomeScreen extends StatelessWidget {
                         } else {
                           return DropdownButtonHideUnderline(
                             child: DropdownButton<Category>(
-                              value:const Category(name: selectValue),
-                              items: [const Category(name: selectValue)]
+                              value:const Category(name: SELECT_VALUE),
+                              items: [const Category(name: SELECT_VALUE)]
                                   .map((Category category) {
                                 return DropdownMenuItem<Category>(
                                   value: category,

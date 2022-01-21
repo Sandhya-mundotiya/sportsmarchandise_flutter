@@ -135,8 +135,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
           products: event.products,
           filter: Filters(
               subCategory:
-                  state.filter.subCategory ?? const Category(name: selectValue),
-              category: state.filter.category ?? const Category(name: selectValue),
+                  state.filter.subCategory ?? const Category(name: SELECT_VALUE),
+              category: state.filter.category ?? const Category(name: SELECT_VALUE),
             createdDate: state.filter.createdDate ?? "",
               createdDateController: state.filter.createdDateController ?? TextEditingController()
           ));
@@ -145,8 +145,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
           categories: categoryBloc.state.categories,
           products: event.products,
           filter: Filters(
-              subCategory: const Category(name: selectValue),
-              category: const Category(name: selectValue),
+              subCategory: const Category(name: SELECT_VALUE),
+              category: const Category(name: SELECT_VALUE),
               createdDate: "",
               createdDateController: TextEditingController()));
     }
@@ -159,7 +159,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     yield ProductLoaded(
       filter: Filters(
           category: event.category,
-          subCategory: const Category(name: selectValue),
+          subCategory: const Category(name: SELECT_VALUE),
         createdDate: state.filter.createdDate,
         createdDateController: state.filter.createdDateController
       ),

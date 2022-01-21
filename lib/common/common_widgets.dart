@@ -213,6 +213,7 @@ bottomSheet(BuildContext context,String title, List<String> list, TextEditingCon
 snac(String message,{bool error,bool success}){
   ScaffoldMessenger.of(NavigationService.navigatorKey.currentContext).showSnackBar(SnackBar(content: Text(message,style: TextStyle(color: error!=null && error?Colors.red:success!=null && success?Colors.green:Colors.white),)));
 }
+
 Widget spinnerField(Function onClick,{String hint,TextEditingController controller,String validation,int minLines}){
   return  Column(
     crossAxisAlignment: CrossAxisAlignment.start,

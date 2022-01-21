@@ -1,9 +1,6 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:merch/common/common_widgets.dart';
-import 'package:merch/constants/firestore_constants.dart';
 import 'package:merch/models/category_model.dart';
 import 'package:merch/repositories/category/category_repository.dart';
 
