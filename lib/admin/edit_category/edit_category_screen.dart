@@ -240,7 +240,7 @@ class EditCategoryScreen extends StatelessWidget {
       const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       decoration: ShapeDecoration(
           shape: RoundedRectangleBorder(
-            side: BorderSide(width: 1.0, style: BorderStyle.solid),
+            side: BorderSide(width: 1.0, style: BorderStyle.solid,color: Colors.white),
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
           color: primaryColor),
@@ -260,7 +260,7 @@ class EditCategoryScreen extends StatelessWidget {
             decoration: ShapeDecoration(
               color: Colors.white,
               shape: RoundedRectangleBorder(
-                side: BorderSide(width: 1.0, style: BorderStyle.solid),
+                side: BorderSide(width: 1.0, style: BorderStyle.solid,color: Colors.white),
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
               ),
             ),
