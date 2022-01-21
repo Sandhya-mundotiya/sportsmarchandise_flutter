@@ -247,7 +247,7 @@ class EditCategoryScreen extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            "Sort by: ",
+            "Category: ",
             style: TextStyle(
                 fontSize: 18, fontWeight: FontWeight.bold,color: Colors.white),
           ),
