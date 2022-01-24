@@ -383,12 +383,8 @@ class EditProductScreen extends StatelessWidget {
                                       CrossAxisAlignment.start,
                                       children: [
                                         Container(
-                                          width: SizeConfig
-                                              .blockSizeHorizontal *
-                                              70,
-                                          height: SizeConfig
-                                              .blockSizeVertical *
-                                              20,
+                                          width: SizeConfig.blockSizeHorizontal * 40,
+                                          height: 170,
                                           color: Colors.white,
                                         ),
                                       ]),

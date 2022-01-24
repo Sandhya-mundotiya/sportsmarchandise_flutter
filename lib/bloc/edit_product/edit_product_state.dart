@@ -41,8 +41,7 @@ class EditProductState extends Equatable {
 
   factory EditProductState.initial() {
     return EditProductState(
-        selectedCategory: Category(name: SELECT_VALUE),
-        selectedSubCategory: Category(name: SELECT_VALUE),
+
         nameController: TextEditingController(),
         descController: TextEditingController(),
         priceController: TextEditingController(),

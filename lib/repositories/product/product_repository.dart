@@ -73,6 +73,9 @@ class ProductRepository extends BaseProductRepository {
     _firebaseFirestore.collection(SCHOOL_TABLE).doc(SchoolData.schoolId).collection(PRODUCT_TABLE).doc(productObj.uid).update(
       {
         'description': productObj.description,
+        'name': productObj.name,
+        'price': productObj.price,
+        'category': productObj.catId,
       },
     )
         .then((value){
