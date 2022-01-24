@@ -6,15 +6,20 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:merch/admin/add_item/add_product.dart';
 import 'package:merch/admin/add_item/add_product_controller.dart';
+import 'package:merch/admin/edit_product/edit_product_screen.dart';
+import 'package:merch/bloc/category/category_bloc.dart';
+import 'package:merch/bloc/edit_product/edit_product_bloc.dart';
 import 'package:merch/constants/string_constant.dart';
 import 'package:merch/admin/product_details/product_detail_cubid.dart';
 import 'package:merch/admin/product_details/product_details_screen.dart';
 import 'package:merch/bloc/product/product_bloc.dart';
 import 'package:merch/constants/app_color.dart';
 import 'package:merch/constants/utils/size_config.dart';
-import 'package:merch/main.dart';
+import 'package:merch/main.dart' as main;
 import 'package:merch/models/category_model.dart';
 import 'package:merch/models/product_model.dart';
+import 'package:merch/repositories/product/product_repository.dart'
+    as product_repo;
 import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -31,14 +36,14 @@ class HomeScreen extends StatelessWidget {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
             onPressed: () {
-              getIt.registerSingleton<AddProductModel>(AddProductController());
-              context
-                  .read<ProductBloc>()
-                  .add(ClearFilters());
+              main.getIt
+                  .registerSingleton<AddProductModel>(AddProductController());
+              context.read<ProductBloc>().add(ClearFilters());
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => AddProductScreen(schoolId: schoolId)));
+                      builder: (context) =>
+                          AddProductScreen(schoolId: schoolId)));
             },
             child: const Icon(Icons.add, color: Colors.white)),
         appBar: AppBar(
@@ -69,6 +74,7 @@ class HomeScreen extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     );
                   }
+
                   if (state is ProductLoaded) {
                     return state.products.isNotEmpty
                         ? Padding(
@@ -170,14 +176,53 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                          top: SizeConfig.blockSizeHorizontal * 4),
-                      child: Text(product.name,
-                          style: TextStyle(
-                              fontSize: SizeConfig.blockSizeHorizontal * 4,
-                              fontWeight: FontWeight.w500,
-                              color: appBlack)),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: SizeConfig.blockSizeHorizontal * 4),
+                          child: Text(product.name,
+                              style: TextStyle(
+                                  fontSize: SizeConfig.blockSizeHorizontal * 4,
+                                  fontWeight: FontWeight.w500,
+                                  color: appBlack)),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+
+                              // context
+                              //     .read<ProductBloc>()
+                              //     .add(ClearFilters());
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => BlocProvider(
+                                            create: (context) => EditProductBloc(
+                                                categoryBloc: BlocProvider.of<
+                                                    CategoryBloc>(context),
+                                                productRepository: product_repo
+                                                    .ProductRepository(),
+                                              selectedProduct: product
+                                            ),
+                                            child: EditProductScreen(
+                                                schoolId: schoolId),
+                                          )));
+                            },
+                            child: Align(
+                              alignment: Alignment.bottomRight,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    top: SizeConfig.blockSizeHorizontal * 2),
+                                child: Icon(
+                                  Icons.edit,
+                                  size: 15,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     Padding(
                       padding: EdgeInsets.only(
@@ -225,9 +270,7 @@ class HomeScreen extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         Navigator.pop(context);
-                        context
-                            .read<ProductBloc>()
-                            .add(ClearFilters());
+                        context.read<ProductBloc>().add(ClearFilters());
                       },
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
@@ -239,16 +282,19 @@ class HomeScreen extends StatelessWidget {
 
                 //Catagory
                 const Padding(
-                  padding:  EdgeInsets.only(left: 10, right: 10, top: 20),
-                  child: Text("Catagory",
+                  padding: EdgeInsets.only(left: 10, right: 10, top: 20),
+                  child: Text(
+                    "Catagory",
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ),
-                 Container(
+                Container(
                     height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    decoration:const ShapeDecoration(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 20),
+                    decoration: const ShapeDecoration(
                       color: Colors.white,
                       shape: RoundedRectangleBorder(
                         side: BorderSide(width: 1.0, style: BorderStyle.solid),
@@ -305,7 +351,7 @@ class HomeScreen extends StatelessWidget {
                     )),
 
                 //Sub Catagory
-               const  Padding(
+                const Padding(
                   padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
                   child: Text(
                     "Sub Catagory",
@@ -314,9 +360,11 @@ class HomeScreen extends StatelessWidget {
                 ),
                 Container(
                     height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    decoration:const  ShapeDecoration(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 20),
+                    decoration: const ShapeDecoration(
                       color: Colors.white,
                       shape: RoundedRectangleBorder(
                         side: BorderSide(width: 1.0, style: BorderStyle.solid),
@@ -358,7 +406,7 @@ class HomeScreen extends StatelessWidget {
                         } else {
                           return DropdownButtonHideUnderline(
                             child: DropdownButton<Category>(
-                              value:const Category(name: SELECT_VALUE),
+                              value: const Category(name: SELECT_VALUE),
                               items: [const Category(name: SELECT_VALUE)]
                                   .map((Category category) {
                                 return DropdownMenuItem<Category>(
@@ -374,7 +422,7 @@ class HomeScreen extends StatelessWidget {
                     )),
 
                 //Created Date
-                const  Padding(
+                const Padding(
                   padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
                   child: Text(
                     " Created Date",
@@ -384,9 +432,11 @@ class HomeScreen extends StatelessWidget {
 
                 Container(
                   height: 40,
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                  decoration:const ShapeDecoration(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  decoration: const ShapeDecoration(
                     color: Colors.white,
                     shape: RoundedRectangleBorder(
                       side: BorderSide(width: 1.0, style: BorderStyle.solid),
@@ -396,14 +446,12 @@ class HomeScreen extends StatelessWidget {
                   child: BlocBuilder<ProductBloc, ProductState>(
                     builder: (context, state) {
                       return TextField(
-                          controller: state
-                              .filter
-                              .createdDateController,
+                          controller: state.filter.createdDateController,
                           onTap: () {
                             _selectDate(context);
                           },
                           readOnly: true,
-                          decoration:const InputDecoration(
+                          decoration: const InputDecoration(
                               contentPadding:
                                   EdgeInsets.only(bottom: 10, top: 10),
                               border: InputBorder.none,

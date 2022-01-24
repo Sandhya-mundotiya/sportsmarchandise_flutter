@@ -130,7 +130,12 @@ class AddProductScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (_) => BlocProvider(
-                                    create: (_) => EditCategoryBloc(categoryBloc: BlocProvider.of<CategoryBloc>(context),categoryRepository: CategoryRepository()),
+                                    create: (_) => EditCategoryBloc(
+                                        categoryBloc:
+                                            BlocProvider.of<CategoryBloc>(
+                                                context),
+                                        categoryRepository:
+                                            CategoryRepository()),
                                     child: EditCategoryScreen(),
                                   )));
                     }, text: EDIT_CATEGORY, isExpanded: true),
@@ -195,6 +200,7 @@ class AddProductScreen extends StatelessWidget {
                 actions: [
                   InkWell(
                     onTap: () {
+
                       Navigator.pop(context);
                     },
                     child: const Padding(
