@@ -267,7 +267,7 @@ class EditProductScreen extends StatelessWidget {
 
   Widget productImagesView() {
     return BlocBuilder<EditProductBloc, EditProductState>(
-        builder: (context, state) => state.imagesNetwork != null && state.imagesNetwork.isNotEmpty
+        builder: (context, state) => (state.imagesNetwork != null && state.imagesNetwork.isNotEmpty) || (state.images != null && state.images.isNotEmpty)
             ? SingleChildScrollView(
           scrollDirection: Axis.horizontal,
               child: Row(
