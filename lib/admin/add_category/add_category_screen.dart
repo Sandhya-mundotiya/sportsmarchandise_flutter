@@ -1,26 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:merch/admin/add_category/add_category_controller.dart';
-import 'package:merch/admin/add_category/category_cupid.dart';
-import 'package:merch/bloc/category/category_bloc.dart';
+import 'package:merch/bloc/add_category/add_category_bloc.dart';
 import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/app_color.dart';
+import 'package:merch/constants/string_constant.dart';
 import 'package:merch/constants/utils/size_config.dart';
-import 'package:merch/main.dart';
 import 'package:merch/models/category_model.dart';
 
 class AddCategoryScreen extends StatelessWidget {
-  AddCategoryScreen({Key key,this.schoolId,this.ifSubcategory}) : super(key: key);
-  String schoolId;
-  bool ifSubcategory;
-  var controller=getIt<AddCategoryModel>();
+  AddCategoryScreen({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+
+    List<Widget> widgetList = [];
+    var main = WillPopScope(
       onWillPop: (){
-        getIt.unregister<AddCategoryModel>();
         Navigator.pop(context);
         return;
       },
@@ -34,138 +30,139 @@ class AddCategoryScreen extends StatelessWidget {
               Row(children: [
                 Expanded(
                   child: ListTile(
-                      title: const Text('Category'),
-                      leading:  BlocBuilder<CategoryCubit, int>(
-                        builder: (context, category) => Radio(
-                          value: 1,
-                          groupValue: category,
-                          onChanged: (int value) {
-                            context.read<CategoryCubit>().one();
-                          },
-                        ),
+                    title: const Text('Category'),
+                    leading:  BlocBuilder<AddCategoryBloc, AddCategoryState>(
+                      builder: (context, state) => Radio(
+                        value: 1,
+                        groupValue: state.catValue,
+                        onChanged: (int value) {
+                          context.read<AddCategoryBloc>().add(UpdateCatValue(catValue: value));
+                        },
                       ),
+                    ),
                   ),
                 ),
                 Expanded(
                   child: ListTile(
-                      title: const Text('SubCategory'),
-                      leading: BlocBuilder<CategoryCubit, int>(
-                        builder: (context, category) => Radio(
-                          value: 2,
-                          groupValue: category,
-                          onChanged: (int value) {
-                            context.read<CategoryCubit>().two();
-                          },
-                        ),
+                    title: const Text('SubCategory'),
+                    leading: BlocBuilder<AddCategoryBloc, AddCategoryState>(
+                      builder: (context, state) => Radio(
+                        value: 2,
+                        groupValue: state.catValue,
+                        onChanged: (int value) {
+                          context.read<AddCategoryBloc>().add(UpdateCatValue(catValue: value));
+                        },
                       ),
+                    ),
                   ),
                 ),
               ]),
-              BlocBuilder<CategoryCubit, int>(
-                builder: (context, category) => category==2?spinnerField(() {
-                categoryList(context,"Category",  controller.categoryController);
-                  }, hint: "Category",controller: controller.categoryController) : const SizedBox(),
+              BlocBuilder<AddCategoryBloc, AddCategoryState>(
+                builder: (context, state) {
+                  List<Category> categoryList = [Category(name: SELECT_VALUE)];
+
+                  if (state.categoryList != null) {
+                    categoryList.addAll(state.categoryList
+                        .where((x) => x.catId == "")
+                        .toList());
+                  }
+
+                  return state.catValue == 2
+                      ? spinnerField((category) {
+                    context.read<AddCategoryBloc>().add(
+                        SelectCategoryForSubCategory(
+                            selectedCategory: category));
+                  },
+                      selectedCategory: state.selectedCategory,
+                      categoryList: categoryList,
+                      title: "Category")
+                      : SizedBox();
+                },
               ),
 
-              formTextField(controller: controller.nameController,
-                  focus: controller.nameFocus,
-                  hint: "Name"),
-              formTextField(controller: controller.descController,
-                  focus: controller.descFocus,
-                  hint: "Description"),
-                  appButton(() {
-                    if(controller.catValue==2 && controller.categoryController.text.isEmpty){
+              BlocBuilder<AddCategoryBloc, AddCategoryState>(
+                builder: (context, state) {
+                  return formTextField(controller: state.nameController,
+                      focus: state.nameFocus,
+                      hint: "Name");
+                },
+              ),
+              BlocBuilder<AddCategoryBloc, AddCategoryState>(
+                builder: (context, state) {
+                  return formTextField(controller: state.descController,
+                      focus: state.descFocus,
+                      hint: "Description");
+                },
+              ),
+              BlocBuilder<AddCategoryBloc, AddCategoryState>(
+                builder: (_, state) {
+                  return appButton(() {
+                    if(state.catValue==2 && state.selectedCategory == SELECT_VALUE){
                       snac("Please select one category",error: true);
                     }
-                    else if(controller.nameController.text.isEmpty){
+                    else if(state.nameController.text.isEmpty){
                       snac("Please type name",error: true);
                     }
-                    else if(controller.descController.text.isEmpty) {
+                    else if(state.descController.text.isEmpty) {
                       snac("Please type description",error: true);
                     }
                     else{
-                      controller.addCategory(schoolId);
+                        context.read<AddCategoryBloc>().add(AddNewCategory(context: context));
                     }
-                  }, text: controller.catValue == 2 ? "Add SubCategory" : "Add Category")
+                  }, text: state.catValue == 2 ? "Add SubCategory" : "Add Category");
+                },
+              )
             ],
           ),
         ),
       ),
     );
-  }
-  categoryList(BuildContext context,String title, TextEditingController controller){
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.4,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(25.0),
-            topRight: Radius.circular(25.0),
-          ),
-        ),
-        child: Center(
-          child: Column(
-            children: [
-              AppBar(
-                centerTitle: true,
-                title: Text(title,style:const TextStyle(color: appWhite)),
-                automaticallyImplyLeading: false,
-                actions: [
-                  InkWell(
-                    onTap: (){
-                      Navigator.pop(context);
-                    },
-                    child: const Padding(
-                      padding:EdgeInsets.all(8.0),
-                      child: Icon(Icons.close,color: appWhite,size: 25),
-                    ),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: BlocBuilder<CategoryBloc, CategoryState>(
-                  builder: (context, state) {
-                    if (state is CategoryLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    if (state is CategoryLoaded) {
-                      return ListView(
-                        children: state.categories.where((element) => element.catId=="")
-                            .map((category) => categoryListItem(context,category))
-                            .toList(),
-                      );
-                    } else {
-                      return const Text('Something went wrong.');
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    widgetList.add(main);
+    widgetList.add(BlocBuilder<AddCategoryBloc, AddCategoryState>(
+        builder: (context, state) =>
+        state.isLoading ? loader() : const SizedBox()));
+    return Stack(children: widgetList);
+
   }
 
- Widget categoryListItem(context, Category category){
-    return InkWell(
-      onTap: (){
-        controller.selectedCategory=category;
-        controller.categoryController.text=category.name;
-       Navigator.pop(context);
-      },
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-            vertical: SizeConfig.blockSizeVertical*1.5,
-            horizontal: SizeConfig.blockSizeHorizontal*2),
-        child: Center(child: Text(category.name,style: TextStyle(fontSize: SizeConfig.blockSizeHorizontal * 3.5,fontWeight: FontWeight.w500,color: appBlack))),
-      ),
+  Widget spinnerField(Function onClick(Category value),
+      {Category selectedCategory, List<Category> categoryList, String title}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(
+              left: SizeConfig.blockSizeHorizontal * 2 + 2,
+              top: SizeConfig.blockSizeVertical * 1),
+          child: Text(title),
+        ),
+        Container(
+          height: 42,
+          margin: EdgeInsets.symmetric(
+              horizontal: SizeConfig.blockSizeHorizontal * 2,
+              vertical: SizeConfig.blockSizeVertical * 0.5),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+              border: Border.all(color: Colors.black38, width: 1),
+              color: iconBGGrey),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<Category>(
+              value: selectedCategory,
+              items: categoryList.map((Category category) {
+                return DropdownMenuItem<Category>(
+                  value: category,
+                  child: Text(category.name),
+                );
+              }).toList(),
+              onChanged: (Category item) {
+                onClick(item);
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
+  
 }

@@ -57,6 +57,41 @@ class Product extends Equatable {
     return product;
   }
 
+  Product copyWith({
+     String name,
+     String catId,
+     List<String> images,
+     String uid,
+     String price,
+     int createdDate,
+     String description,
+     double lastBought,
+     int sold,
+     String stockQty
+  }) {
+
+
+    List<String> tempImages = [];
+    if(images == null){
+      if(this.images != null) tempImages.addAll(this.images);
+    }else if(images != null){
+      tempImages.addAll(images);
+    }
+
+    return Product(
+      name: name ?? this.name,
+      catId: catId ?? this.catId,
+      images: tempImages,
+      uid: uid ?? this.uid,
+      price: price ?? this.price,
+      createdDate: createdDate ?? this.createdDate,
+      description: description ?? this.description,
+      lastBought: lastBought ?? this.lastBought,
+      sold: sold ?? this.sold,
+      stockQty: stockQty ?? this.stockQty,
+    );
+  }
+
   @override
   List<Object> get props => [
         name,

@@ -1,16 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:merch/admin/add_category/add_category_controller.dart';
-import 'package:merch/admin/add_category/category_cupid.dart';
-import 'package:merch/bloc/category/category_bloc.dart';
 import 'package:merch/bloc/edit_category/edit_category_bloc.dart';
 import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/app_color.dart';
 import 'package:merch/constants/string_constant.dart';
 import 'package:merch/constants/utils/navigation_service.dart';
 import 'package:merch/constants/utils/size_config.dart';
-import 'package:merch/main.dart';
 import 'package:merch/models/category_model.dart';
 
 class EditCategoryScreen extends StatelessWidget {

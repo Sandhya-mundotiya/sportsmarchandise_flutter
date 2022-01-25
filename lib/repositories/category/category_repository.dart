@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:merch/admin/add_category/add_category_controller.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:merch/bloc/add_category/add_category_bloc.dart';
 import 'package:merch/bloc/edit_category/edit_category_bloc.dart';
 import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/firestore_constants.dart';
 import 'package:merch/constants/utils/school.dart';
 import 'package:merch/models/category_model.dart';
 import 'package:merch/repositories/category/base_category_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CategoryRepository extends BaseCategoryRepository {
   final FirebaseFirestore _firebaseFirestore;
@@ -25,16 +27,20 @@ class CategoryRepository extends BaseCategoryRepository {
   }
 
   @override
-  addCategories({Category categoryOb,String schoolId,AddCategoryController controller}) {
-    CollectionReference reference = _firebaseFirestore.collection(SCHOOL_TABLE).doc(schoolId).collection(CATEGORY_TABLE);
+  addCategories({Category categoryOb,BuildContext context}) {
+    CollectionReference reference = _firebaseFirestore.collection(SCHOOL_TABLE).doc(SchoolData.schoolId).collection(CATEGORY_TABLE);
 
      reference
         .add(categoryOb.toJson())
         .then((value){
-          print("category added success");
-      controller.descController.text="";
-      controller.nameController.text="";
-       snac("Category Created",success: true);
+         context.read<AddCategoryBloc>().add(CategoryAddedSuccessfully());
+
+         if(categoryOb.catId != ""){
+           snac("Sub Category Created",success: true);
+         }else{
+           snac("Category Created",success: true);
+         }
+
     })
         .catchError((error) => print("Failed to add Category: $error"));
   }

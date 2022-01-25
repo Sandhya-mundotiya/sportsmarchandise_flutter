@@ -15,7 +15,6 @@ class EditCategoryBloc extends Bloc<EditCategoryEvent, EditCategoryState> {
 
   final CategoryBloc _categoryBloc;
   final CategoryRepository _categoryRepository;
-  StreamSubscription _categorySubscription;
 
   EditCategoryBloc({@required CategoryBloc categoryBloc,@required CategoryRepository categoryRepository}) :
         _categoryRepository = categoryRepository, _categoryBloc = categoryBloc,
@@ -65,7 +64,6 @@ class EditCategoryBloc extends Bloc<EditCategoryEvent, EditCategoryState> {
   }
 
   Stream<EditCategoryState> _mapUpdateCategoryToState(EditCategoryState state) async* {
-    _categorySubscription?.cancel();
 
     Category updatedCategory = Category(name: state.nameController.text,description: state.descController.text);
 
@@ -87,7 +85,6 @@ class EditCategoryBloc extends Bloc<EditCategoryEvent, EditCategoryState> {
   }
 
   Stream<EditCategoryState> _mapEnableOrDisableCategoryToState(EditCategoryState state,EnableOrDisableCategory event) async* {
-    _categorySubscription?.cancel();
 
     String type = "Category";
 

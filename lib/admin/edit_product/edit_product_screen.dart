@@ -2,38 +2,22 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:merch/admin/add_category/add_category_controller.dart';
-import 'package:merch/admin/add_category/add_category_screen.dart';
-import 'package:merch/admin/add_category/category_cupid.dart';
-import 'package:merch/admin/add_item/assets_cupid.dart';
-import 'package:merch/admin/add_item/loader_cupid.dart';
-import 'package:merch/admin/edit_category/edit_category_screen.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
-import 'package:merch/bloc/edit_category/edit_category_bloc.dart';
 import 'package:merch/bloc/edit_product/edit_product_bloc.dart';
 import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/app_color.dart';
-import 'package:merch/constants/string_constant.dart';
 import 'package:merch/constants/utils/size_config.dart';
-import 'package:merch/main.dart';
 import 'package:merch/models/category_model.dart';
-import 'package:merch/repositories/category/category_repository.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
-import 'package:merch/admin/add_item/add_product_controller.dart';
 import 'package:shimmer/shimmer.dart';
 
 class EditProductScreen extends StatelessWidget {
-  EditProductScreen({Key key, this.schoolId}) : super(key: key);
-  String schoolId;
-//  var controller = getIt<AddProductModel>();
 
   @override
   Widget build(BuildContext context) {
     List<Widget> widgetList = [];
     var main = WillPopScope(
       onWillPop: () {
-        // context.read<AssetCubit>().clear();
-        // context.read<LoaderCubit>().hideLoader();
         Navigator.pop(context);
         return;
       },
@@ -68,11 +52,9 @@ class EditProductScreen extends StatelessWidget {
                               ),
                             ).then((value) {
                               context.read<EditProductBloc>().add(AddImagesToModel(images: value));
-                              // controller.images = value;
-                              // context.read<AssetCubit>().refresh();
                             });
                           } on Exception catch (e) {
-                            // error = e.toString();
+
                           }
                         }, text: "Add/Change Images", isExpanded: true);
                       },
@@ -124,53 +106,10 @@ class EditProductScreen extends StatelessWidget {
                             hint: "Description");
                       },
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: appButton(() {
-                            getIt.registerSingleton<AddCategoryModel>(
-                                AddCategoryController());
-                            context.read<CategoryCubit>().one();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        AddCategoryScreen(schoolId: schoolId)));
-                          }, text: "Add Category", isExpanded: true),
-                        ),
-                        Expanded(
-                          child: appButton(() {
-                            getIt.registerSingleton<AddCategoryModel>(
-                                AddCategoryController(isSubcategory: true));
-                            context.read<CategoryCubit>().two();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        AddCategoryScreen(schoolId: schoolId)));
-                          }, text: "Add SubCategory", isExpanded: true),
-                        )
-                      ],
-                    ),
-                    appButton(() {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => BlocProvider(
-                                    create: (_) => EditCategoryBloc(
-                                        categoryBloc:
-                                            BlocProvider.of<CategoryBloc>(
-                                                context),
-                                        categoryRepository:
-                                            CategoryRepository()),
-                                    child: EditCategoryScreen(),
-                                  )));
-                    }, text: EDIT_CATEGORY, isExpanded: true),
+
                     BlocBuilder<EditProductBloc, EditProductState>(
                       builder: (innerContext, state) {
                         return appButton(() {
-                          //var currentState = context.read<EditProductBloc>();
-
                           if (!(state.images.isNotEmpty || state.imagesNetwork.isNotEmpty)) {
                             snac("Please upload at least one product image",
                                 error: true);
@@ -183,8 +122,6 @@ class EditProductScreen extends StatelessWidget {
                           } else if (state.descController.text.isEmpty) {
                             snac("Please type description", error: true);
                           } else {
-                            // context.read<LoaderCubit>().showLoader();
-                            //context.read<EditProductBloc>().addProduct(schoolId, context);
                             context.read<EditProductBloc>().add(UpdateProduct(context: context));
                           }
                         }, text: "Update Product", isExpanded: true);
@@ -208,7 +145,7 @@ class EditProductScreen extends StatelessWidget {
       BuildContext context,BuildContext globalContext, String title, TextEditingController controller,
       {String catId}) {
     showModalBottomSheet(
-      context: context,
+      context: globalContext,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
@@ -231,6 +168,7 @@ class EditProductScreen extends StatelessWidget {
                   InkWell(
                     onTap: () {
 
+                      Navigator.pop(globalContext);
                     },
                     child: const Padding(
                       padding: EdgeInsets.all(8.0),
@@ -334,7 +272,7 @@ class EditProductScreen extends StatelessWidget {
           scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  if(state.imagesNetwork != null && state.imagesNetwork.isNotEmpty) Container(
+                  if(state.images != null && state.images.isNotEmpty) Container(
                       height: 170,
                       margin: const EdgeInsets.only(top: 5),
                       child: ListView(
@@ -342,15 +280,33 @@ class EditProductScreen extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         children: List.generate(state.images.length, (index) {
                           Asset asset = state.images[index];
-                          return Container(
-                            color: Colors.black,
-                            margin: const EdgeInsets.all(3),
-                            padding: const EdgeInsets.all(3),
-                            child: AssetThumb(
-                              asset: asset,
-                              width: 100,
-                              height: 100,
-                            ),
+                          return Stack(
+                            children: [
+                              Container(
+                                color: Colors.black,
+                                margin: const EdgeInsets.all(15),
+                                padding: const EdgeInsets.all(3),
+                                child: AssetThumb(
+                                  asset: asset,
+                                  height: 170,
+                                  width: (SizeConfig.blockSizeHorizontal * 40).toInt(),
+                                ),
+                              ),
+
+                              Positioned(
+                                left: 0,
+                                top: 0,
+                                child: GestureDetector(
+                                  onTap: (){
+                                    context.read<EditProductBloc>().add(DeleteAssetImage(deleteImageAsset: asset));
+                                  },
+                                  child: Icon(
+                                    Icons.cancel,
+                                    color: primaryColor,
+                                  ),
+                                ),
+                              )
+                            ],
                           );
                         }).toList(),
                       ),
@@ -363,33 +319,54 @@ class EditProductScreen extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       children: List.generate(state.imagesNetwork.length, (index) {
                         String image = state.imagesNetwork[index];
-                        return Container(
-                          color: Colors.black,
-                          margin: const EdgeInsets.all(3),
-                          padding: const EdgeInsets.all(3),
-                          child: CachedNetworkImage(
-                              imageUrl: image,
-                              fit: BoxFit.fill,
-                              height: 170,
-                              width: SizeConfig.blockSizeHorizontal * 40,
-                              placeholder: (context, url) => Container(
-                                child: Shimmer.fromColors(
-                                  baseColor: Colors.grey[300],
-                                  highlightColor: Colors.grey[100],
-                                  child: Column(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: SizeConfig.blockSizeHorizontal * 40,
-                                          height: 170,
-                                          color: Colors.white,
+                        return Stack(
+                          children: [
+                            Container(
+
+                              child: Container(
+                                color: Colors.black,
+                                margin: const EdgeInsets.all(15),
+                                padding: const EdgeInsets.all(3),
+                                child: AspectRatio(
+                                  aspectRatio: 1/1,
+                                  child: CachedNetworkImage(
+                                      imageUrl: image,
+                                      fit: BoxFit.fill,
+                                      placeholder: (context, url) => Container(
+                                        child: Shimmer.fromColors(
+                                          baseColor: Colors.grey[300],
+                                          highlightColor: Colors.grey[100],
+                                          child: Column(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  child: Container(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ]),
                                         ),
-                                      ]),
+                                      )),
                                 ),
-                              )),
+                              ),
+                            ),
+                            Positioned(
+                              left: 0,
+                              top: 0,
+                              child: GestureDetector(
+                                onTap: (){
+                                    context.read<EditProductBloc>().add(DeleteUrlImage(deletedImageUrl: image,context: context));
+                                },
+                                child: Icon(
+                                  Icons.cancel,
+                                  color: primaryColor,
+                                ),
+                              ),
+                            )
+                          ],
                         );
                       }).toList(),
                     ),

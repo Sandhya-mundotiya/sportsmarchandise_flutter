@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
 import 'package:merch/constants/string_constant.dart';
 import 'package:merch/models/category_model.dart';
@@ -20,7 +21,7 @@ class EditProductBloc extends Bloc<EditProductEvent, EditProductState> {
   final Product _selectedProduct;
 
   EditProductBloc({@required CategoryBloc categoryBloc,@required ProductRepository productRepository,@required  Product selectedProduct}) :
-        _productRepository = productRepository, _categoryBloc = categoryBloc, _selectedProduct = selectedProduct,
+        _productRepository = productRepository, _categoryBloc = categoryBloc, _selectedProduct = selectedProduct.copyWith(),
         super(EditProductState.initial()) {
 
     print("Categoty loaded");
@@ -40,7 +41,7 @@ class EditProductBloc extends Bloc<EditProductEvent, EditProductState> {
       print(category);
       Category subCategory;
 
-      if(category != null && category.isSubCategory){
+      if(category != null && category.catId != null && category.catId != ""){
         subCategory = category;
         category = event.categories.firstWhere((element) => element.uId == category.catId);
 
@@ -62,6 +63,24 @@ class EditProductBloc extends Bloc<EditProductEvent, EditProductState> {
       yield* _mapToUpdateProductProductState(state,event,event.context);
     }
     if(event is StopLoading) yield state.update(isLoading: false);
+    if(event is DeleteUrlImage) {
+      yield state.update(isLoading: true);
+      yield* _mapToDeleteImageState(state,event,event.context);
+
+    }
+
+    if(event is SuccessfulyDeletedImage) {
+      List<String> imagesNetwork = state.imagesNetwork;
+      imagesNetwork.removeWhere((element) => element == event.deletedImageUrl);
+      yield state.update(imagesNetwork: imagesNetwork,isLoading: false);
+    }
+
+    if(event is DeleteAssetImage) {
+      List<Asset> images = state.images;
+      images.removeWhere((element) => element == event.deleteImageAsset);
+      yield state.update(images: images,isLoading: false);
+
+    }
   }
 
 
@@ -84,8 +103,17 @@ class EditProductBloc extends Bloc<EditProductEvent, EditProductState> {
       catId: catId,
     );
 
-    _productRepository.updateProduct(productObj:  updatedProduct,context: context);
+    _productRepository.updateProduct(productObj:  updatedProduct,context: context,assetImages: state.images);
 
   }
+
+  Stream<EditProductState> _mapToDeleteImageState(EditProductState state,DeleteUrlImage event,BuildContext context) async* {
+    _categorySubscription?.cancel();
+
+    _productRepository.deleteImage(context: context,uid:_selectedProduct.uid,image: event.deletedImageUrl);
+
+  }
+
+
 
 }

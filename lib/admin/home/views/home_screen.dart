@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:merch/admin/add_item/add_product.dart';
-import 'package:merch/admin/add_item/add_product_controller.dart';
 import 'package:merch/admin/edit_product/edit_product_screen.dart';
+import 'package:merch/bloc/add_product/add_product_bloc.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
 import 'package:merch/bloc/edit_product/edit_product_bloc.dart';
 import 'package:merch/constants/string_constant.dart';
@@ -36,14 +36,17 @@ class HomeScreen extends StatelessWidget {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
             onPressed: () {
-              main.getIt
-                  .registerSingleton<AddProductModel>(AddProductController());
               context.read<ProductBloc>().add(ClearFilters());
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          AddProductScreen(schoolId: schoolId)));
+                      builder: (context) => BlocProvider(
+                            create: (context) => AddProductBloc(
+                                categoryBloc: context.read<CategoryBloc>(),
+                                productRepository:
+                                    product_repo.ProductRepository()),
+                            child: AddProductScreen(schoolId: schoolId),
+                          )));
             },
             child: const Icon(Icons.add, color: Colors.white)),
         appBar: AppBar(
@@ -190,10 +193,6 @@ class HomeScreen extends StatelessWidget {
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-
-                              // context
-                              //     .read<ProductBloc>()
-                              //     .add(ClearFilters());
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -203,10 +202,9 @@ class HomeScreen extends StatelessWidget {
                                                     CategoryBloc>(context),
                                                 productRepository: product_repo
                                                     .ProductRepository(),
-                                              selectedProduct: product
-                                            ),
-                                            child: EditProductScreen(
-                                                schoolId: schoolId),
+                                                selectedProduct:
+                                                    product.copyWith()),
+                                            child: EditProductScreen(),
                                           )));
                             },
                             child: Align(

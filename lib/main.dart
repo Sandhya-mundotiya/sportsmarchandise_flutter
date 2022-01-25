@@ -4,11 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:merch/admin/add_category/category_cupid.dart';
-import 'package:merch/admin/add_item/assets_cupid.dart';
-import 'package:merch/admin/add_item/loader_cupid.dart';
 import 'package:merch/bloc/category/category_bloc.dart';
-import 'package:merch/bloc/edit_category/edit_category_bloc.dart';
 import 'package:merch/bloc/product/product_bloc.dart';
 import 'package:merch/bloc/school/school_bloc.dart';
 import 'package:merch/common/app_bloc_observer.dart';
@@ -50,9 +46,6 @@ class MyApp extends StatelessWidget {
             SchoolRepository: SchoolRepository(),
           )..add(LoadSchools()),
         ),
-        BlocProvider(create: (_) => CategoryCubit()),
-        BlocProvider(create: (_) => AssetCubit()),
-        BlocProvider(create: (_) => LoaderCubit()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,navigatorKey: NavigationService.navigatorKey,

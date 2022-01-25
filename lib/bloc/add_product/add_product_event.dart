@@ -1,10 +1,10 @@
-part of 'edit_product_bloc.dart';
+part of 'add_product_bloc.dart';
 
-abstract class EditProductEvent extends Equatable {
-  const EditProductEvent();
+abstract class AddProductEvent extends Equatable {
+  const AddProductEvent();
 }
 
-class LoadCategory extends EditProductEvent{
+class LoadCategory extends AddProductEvent{
   final List<Category> categories;
 
   LoadCategory({this.categories});
@@ -15,7 +15,7 @@ class LoadCategory extends EditProductEvent{
 
 }
 
-class AddImagesToModel extends EditProductEvent{
+class AddImagesToModel extends AddProductEvent{
   final List<Asset> images;
 
   AddImagesToModel({this.images});
@@ -26,7 +26,7 @@ class AddImagesToModel extends EditProductEvent{
 
 }
 
-class AddSelectedCategoryModel extends EditProductEvent{
+class AddSelectedCategoryModel extends AddProductEvent{
   final Category selectedCategory;
 
   AddSelectedCategoryModel({this.selectedCategory});
@@ -37,7 +37,7 @@ class AddSelectedCategoryModel extends EditProductEvent{
 
 }
 
-class AddSelectedSubCategoryModel extends EditProductEvent{
+class AddSelectedSubCategoryModel extends AddProductEvent{
   final Category selectedSubCategory;
 
   AddSelectedSubCategoryModel({this.selectedSubCategory});
@@ -48,36 +48,24 @@ class AddSelectedSubCategoryModel extends EditProductEvent{
 
 }
 
-class UpdateProduct extends EditProductEvent{
+class AddProduct extends AddProductEvent{
   final BuildContext context;
 
-  UpdateProduct({this.context});
+  AddProduct({this.context});
   @override
   // TODO: implement props
   List<Object> get props => [context];
 
 }
 
-class StopLoading extends EditProductEvent{
+class StopLoading extends AddProductEvent{
   @override
   // TODO: implement props
   List<Object> get props => [];
 
 }
 
-class DeleteUrlImage extends EditProductEvent{
-  final String deletedImageUrl;
-  BuildContext context;
-
-  DeleteUrlImage({this.deletedImageUrl,this.context});
-
-  @override
-  // TODO: implement props
-  List<Object> get props => [deletedImageUrl,context];
-
-}
-
-class DeleteAssetImage extends EditProductEvent{
+class DeleteAssetImage extends AddProductEvent{
   final Asset deleteImageAsset;
 
   DeleteAssetImage({this.deleteImageAsset});
@@ -88,13 +76,3 @@ class DeleteAssetImage extends EditProductEvent{
 
 }
 
-class SuccessfulyDeletedImage extends EditProductEvent{
-
-  final String deletedImageUrl;
-
-  SuccessfulyDeletedImage({this.deletedImageUrl});
-  @override
-  // TODO: implement props
-  List<Object> get props => [deletedImageUrl];
-
-}
