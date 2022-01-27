@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:merch/bloc/add_category/add_category_bloc.dart';
-import 'package:merch/bloc/edit_category/edit_category_bloc.dart';
+import 'package:merch/admin/bloc/add_category/add_category_bloc.dart';
+import 'package:merch/admin/bloc/edit_category/edit_category_bloc.dart';
 import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/firestore_constants.dart';
 import 'package:merch/constants/utils/school.dart';

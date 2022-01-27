@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:merch/bloc/edit_category/edit_category_bloc.dart';
+import 'package:merch/admin/bloc/edit_category/edit_category_bloc.dart';
 import 'package:merch/models/category_model.dart';
 
 abstract class BaseCategoryRepository {
