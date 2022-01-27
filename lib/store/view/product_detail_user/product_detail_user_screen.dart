@@ -41,6 +41,9 @@ class ProductDetailUserScreen extends StatelessWidget {
                           options: CarouselOptions(
                             // aspectRatio: 16 / 9,
                             // viewportFraction: 0.8,
+                            height:  SizeConfig
+                                .blockSizeVertical *
+                                36,
                               initialPage: 0,
                               enableInfiniteScroll: false,
                               reverse: false,
@@ -68,7 +71,7 @@ class ProductDetailUserScreen extends StatelessWidget {
                                           fit: BoxFit.fill,
                                           height: SizeConfig
                                               .blockSizeVertical *
-                                              20,
+                                              30,
                                           width: SizeConfig
                                               .blockSizeHorizontal *
                                               70,
@@ -93,7 +96,7 @@ class ProductDetailUserScreen extends StatelessWidget {
                                                               70,
                                                           height: SizeConfig
                                                               .blockSizeVertical *
-                                                              20,
+                                                              30,
                                                           color: Colors
                                                               .white,
                                                         ),
