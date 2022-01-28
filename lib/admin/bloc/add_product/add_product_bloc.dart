@@ -60,6 +60,7 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
       createdDate: formattedDate.microsecondsSinceEpoch,
       // images: state.images,
       price: state.priceController.text,
+      isEnabled: true
     );
 
     _productRepository.addProduct(productObj: productObj,context: context,assetImages: state.images);

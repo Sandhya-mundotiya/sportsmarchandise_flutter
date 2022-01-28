@@ -12,6 +12,17 @@ class LoadProductDetail extends ProductDetailEvent{
 
 }
 
+class ShowProductDetail extends ProductDetailEvent{
+  final Product product;
+
+  ShowProductDetail({this.product});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [product];
+
+}
+
 class UpdateCarouselIndex extends ProductDetailEvent{
   final int carouselCurentIndex;
 

@@ -18,6 +18,7 @@ class EditProductState extends Equatable {
   final FocusNode descFocus;
   final FocusNode priceFocus;
   final List<Category> categoryList;
+  final bool isEnabled;
 
   EditProductState({
     this.catValue = 1,
@@ -36,6 +37,7 @@ class EditProductState extends Equatable {
     this.categoryList,
     this.isLoading = false,
     this.imagesNetwork,
+    this.isEnabled = true
   });
 
 
@@ -73,6 +75,7 @@ class EditProductState extends Equatable {
     List<Asset> images,
     bool isLoading,
     List<String> imagesNetwork,
+    bool isEnabled
   }) {
     return copyWith(
       catValue: catValue,
@@ -91,6 +94,7 @@ class EditProductState extends Equatable {
       images: images,
         isLoading: isLoading,
       imagesNetwork: imagesNetwork,
+        isEnabled: isEnabled
     );
   }
 
@@ -112,6 +116,7 @@ class EditProductState extends Equatable {
     List<Asset> images,
     bool isLoading,
     List<String> imagesNetwork,
+    bool isEnabled
   }) {
 
     TextEditingController tempNameController = TextEditingController();
@@ -144,11 +149,13 @@ class EditProductState extends Equatable {
       images: images ?? this.images,
       isLoading: isLoading ?? this.isLoading,
       imagesNetwork: imagesNetwork ?? this.imagesNetwork,
+        isEnabled: isEnabled ?? this.isEnabled
     );
   }
 
   @override
   List<Object> get props => [catValue,selectedCategory,selectedSubCategory,nameController,descController,
-    priceController,categoryController,subCategoryController,categoryList,nameFocus,descFocus,priceFocus,isCategory,images,isLoading,imagesNetwork];
+    priceController,categoryController,subCategoryController,categoryList,nameFocus,descFocus,priceFocus,isCategory,images,
+    isLoading,imagesNetwork,isEnabled];
 }
 

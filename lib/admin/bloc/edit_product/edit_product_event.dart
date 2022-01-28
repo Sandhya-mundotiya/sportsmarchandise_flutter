@@ -98,3 +98,25 @@ class SuccessfulyDeletedImage extends EditProductEvent{
   List<Object> get props => [deletedImageUrl];
 
 }
+
+class EnableDisableProduct extends EditProductEvent{
+  final bool isEnabled;
+  final BuildContext context;
+
+  EnableDisableProduct({this.isEnabled,this.context});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [isEnabled,context];
+
+}
+
+class EnableDisableProductSuccessfully extends EditProductEvent{
+  final bool isEnabled;
+  EnableDisableProductSuccessfully({this.isEnabled});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [isEnabled];
+
+}

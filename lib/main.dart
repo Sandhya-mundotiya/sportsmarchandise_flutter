@@ -16,15 +16,21 @@ import 'package:merch/repositories/category/category_repository.dart';
 import 'package:merch/repositories/product/product_repository.dart';
 import 'package:merch/repositories/school/school_repository.dart';
 import 'package:merch/store/bloc/product_list/product_user_bloc.dart' as product_user_bloc;
+import 'package:flutter_stripe/flutter_stripe.dart';
+
 
 GetIt getIt = GetIt.instance;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // set the publishable key for Stripe - this is mandatory
+  Stripe.publishableKey = 'pk_test_4R3QOVd7lK64gHdpf6HWi5qo';
+
   Bloc.observer = AppBlocObserver();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(MyApp());
 }
 
@@ -59,19 +65,19 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,navigatorKey: NavigationService.navigatorKey,
         title: 'Sport Center',
         theme: ThemeData(
-          primarySwatch: MaterialColor(0xFFC388F6,<int, Color>{
-          50: Color(0xFFE3F2FD),
-          100: Color(0xFFBBDEFB),
-          200: Color(0xFF90CAF9),
-          300: Color(0xFF64B5F6),
-          400: Color(0xFF42A5F5),
-          500: Color(0xFFC388F6),
-          600: Color(0xFF1E88E5),
-          700: Color(0xFF1976D2),
-          800: Color(0xFF1565C0),
-          900: Color(0xFF0D47A1),
+          primarySwatch: MaterialColor(0xFFAB6A58,<int, Color>{
+          50: Color(0xFFAB6A58),
+          100: Color(0xFFAB6A5B),
+          200: Color(0xFFC19A59),
+          300: Color(0xFFC19A56),
+          400: Color(0xFFC19A55),
+          500: Color(0xFFC19A56),
+          600: Color(0xFFC19A55),
+          700: Color(0xFFC19A52),
+          800: Color(0xFFC19A50),
+          900: Color(0xFFC19A51),
           },),
-          appBarTheme: AppBarTheme(color: Colors.white)
+          appBarTheme: AppBarTheme(color: appWhite,foregroundColor:appBlack)
         ),
         home:const AppSelectionScreen(),
       ),

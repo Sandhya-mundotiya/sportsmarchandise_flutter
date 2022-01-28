@@ -110,6 +110,14 @@ class EditProductScreen extends StatelessWidget {
                     BlocBuilder<EditProductBloc, EditProductState>(
                       builder: (innerContext, state) {
                         return appButton(() {
+                          context.read<EditProductBloc>().add(EnableDisableProduct(context: context,isEnabled: !state.isEnabled));
+                        }, text: state.isEnabled ? "Disable Product" : "Enable Product", isExpanded: true);
+                      },
+                    ),
+
+                    BlocBuilder<EditProductBloc, EditProductState>(
+                      builder: (innerContext, state) {
+                        return appButton(() {
                           if (!(state.images.isNotEmpty || state.imagesNetwork.isNotEmpty)) {
                             snac("Please upload at least one product image",
                                 error: true);

@@ -35,6 +35,7 @@ class HomeScreen extends StatelessWidget {
       },
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
+          backgroundColor: primaryColor,
             onPressed: () {
               context.read<ProductBloc>().add(ClearFilters());
               Navigator.push(
@@ -118,7 +119,7 @@ class HomeScreen extends StatelessWidget {
             context,
             MaterialPageRoute(
                 builder: (context) => BlocProvider(
-                    create: (context) => ProductDetailBloc(product: product),
+                    create: (context) => ProductDetailBloc(productRepository: product_repo.ProductRepository(),productId: product.uid),
                     child: ProductDetailsScreen())));
       },
       child: Padding(
@@ -252,7 +253,7 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       isDismissible: false,
       builder: (context) => Container(
-          height: MediaQuery.of(context).size.height * 0.55,
+          height: MediaQuery.of(context).size.height * 0.5,
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -300,14 +301,13 @@ class HomeScreen extends StatelessWidget {
                           height: 40,
                           padding:
                               const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 20),
-                          decoration: const ShapeDecoration(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(width: 1.0, style: BorderStyle.solid),
-                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                            ),
+                          // margin: const EdgeInsets.symmetric(
+                          //     horizontal: 20, vertical: 20),
+                          margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal*2,vertical: SizeConfig.blockSizeVertical*0.5),
+                          decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(Radius.circular(5)),
+                              border: Border.all(color: Colors.black38,width: 1),
+                              color: iconBGGrey
                           ),
                           child: BlocBuilder<ProductBloc, ProductState>(
                             builder: (context, state) {
@@ -370,14 +370,11 @@ class HomeScreen extends StatelessWidget {
                           height: 40,
                           padding:
                               const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 20),
-                          decoration: const ShapeDecoration(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(width: 1.0, style: BorderStyle.solid),
-                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                            ),
+                          margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal*2,vertical: SizeConfig.blockSizeVertical*0.5),
+                          decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(Radius.circular(5)),
+                              border: Border.all(color: Colors.black38,width: 1),
+                              color: iconBGGrey
                           ),
                           child: BlocBuilder<ProductBloc, ProductState>(
                             builder: (context, state) {
@@ -442,14 +439,11 @@ class HomeScreen extends StatelessWidget {
                         height: 40,
                         padding:
                             const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        margin:
-                            const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                        decoration: const ShapeDecoration(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(width: 1.0, style: BorderStyle.solid),
-                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          ),
+                        margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal*2,vertical: SizeConfig.blockSizeVertical*0.5),
+                        decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.all(Radius.circular(5)),
+                            border: Border.all(color: Colors.black38,width: 1),
+                            color: iconBGGrey
                         ),
                         child: BlocBuilder<ProductBloc, ProductState>(
                           builder: (_, state) {
@@ -468,29 +462,49 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(
-                        height: 10,
+                        height: 20,
                       ),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ElevatedButton(
-                            child: Text("Done",
-                                style: TextStyle(
-                                    color: appWhite,
-                                    fontSize: SizeConfig.blockSizeHorizontal * 4,
-                                    fontWeight: FontWeight.bold)),
-                            onPressed: () {
-                              Navigator.pop(context);
-                              context.read<ProductBloc>().add(UpdateFilters());
-                            },
-                            style: ElevatedButton.styleFrom(
-                              primary: primaryColor,
-                              padding: EdgeInsets.symmetric(
-                                  vertical: SizeConfig.blockSizeVertical * 1,
-                                  horizontal: SizeConfig.blockSizeHorizontal * 10),
+
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: primaryColor,
+                                  borderRadius: BorderRadius.all(Radius.circular(50))
+                              ),
+
+                              padding: EdgeInsets.symmetric(vertical: 6,horizontal: 5),
+                              child: MaterialButton(
+                                onPressed: (){
+                                  Navigator.pop(context);
+                                  context.read<ProductBloc>().add(UpdateFilters());
+                                },
+                                child: Text("Done",style: TextStyle(color: Colors.white,fontSize: 16),),
+                              ),
                             ),
                           ),
+
+                          // ElevatedButton(
+                          //   child: Text("Done",
+                          //       style: TextStyle(
+                          //           color: appWhite,
+                          //           fontSize: SizeConfig.blockSizeHorizontal * 4,
+                          //           fontWeight: FontWeight.bold)),
+                          //   onPressed: () {
+                          //     Navigator.pop(context);
+                          //     context.read<ProductBloc>().add(UpdateFilters());
+                          //   },
+                          //   style: ElevatedButton.styleFrom(
+                          //     primary: primaryColor,
+                          //     padding: EdgeInsets.symmetric(
+                          //         vertical: SizeConfig.blockSizeVertical * 1,
+                          //         horizontal: SizeConfig.blockSizeHorizontal * 10),
+                          //   ),
+                          // ),
                         ],
                       ),
 

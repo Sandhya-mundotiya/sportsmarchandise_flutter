@@ -20,78 +20,102 @@ class EditProductBloc extends Bloc<EditProductEvent, EditProductState> {
   StreamSubscription _categorySubscription;
   final Product _selectedProduct;
 
-  EditProductBloc({@required CategoryBloc categoryBloc,@required ProductRepository productRepository,@required  Product selectedProduct}) :
-        _productRepository = productRepository, _categoryBloc = categoryBloc, _selectedProduct = selectedProduct.copyWith(),
+  EditProductBloc(
+      {@required CategoryBloc categoryBloc, @required ProductRepository productRepository, @required Product selectedProduct})
+      :
+        _productRepository = productRepository,
+        _categoryBloc = categoryBloc,
+        _selectedProduct = selectedProduct.copyWith(),
         super(EditProductState.initial()) {
-
     print("Categoty loaded");
     print(categoryBloc.state.categories);
     add(LoadCategory(categories: categoryBloc.state.categories));
-
   }
 
   @override
-  Stream<EditProductState> mapEventToState(
-      EditProductEvent event,
-      ) async* {
-
-    if(event is LoadCategory) {
-
-      Category category = event.categories.firstWhere((element) => element.uId == _selectedProduct.catId);
+  Stream<EditProductState> mapEventToState(EditProductEvent event,) async* {
+    if (event is LoadCategory) {
+      Category category = event.categories.firstWhere((element) =>
+      element.uId == _selectedProduct.catId);
       print(category);
       Category subCategory;
 
-      if(category != null && category.catId != null && category.catId != ""){
+      if (category != null && category.catId != null && category.catId != "") {
         subCategory = category;
-        category = event.categories.firstWhere((element) => element.uId == category.catId);
+        category = event.categories.firstWhere((element) => element.uId ==
+            category.catId);
 
-        yield(state.update(categoryList: event.categories,nameValue: _selectedProduct.name,priceValue: _selectedProduct.price,
-            descValue: _selectedProduct.description,imagesNetwork: _selectedProduct.images,selectedCategory: category,categoryValue: category.name,
-          subCategoryValue: subCategory.name,selectedSubCategory: subCategory
+        yield(state.update(categoryList: event.categories,
+            nameValue: _selectedProduct.name,
+            priceValue: _selectedProduct.price,
+            descValue: _selectedProduct.description,
+            imagesNetwork: _selectedProduct.images,
+            selectedCategory: category,
+            categoryValue: category.name,
+            subCategoryValue: subCategory.name,
+            selectedSubCategory: subCategory,
+            isEnabled: _selectedProduct.isEnabled
         ));
       }
 
-      yield(state.update(categoryList: event.categories,nameValue: _selectedProduct.name,priceValue: _selectedProduct.price,
-          descValue: _selectedProduct.description,imagesNetwork: _selectedProduct.images,selectedCategory: category,categoryValue: category.name
+      yield(state.update(categoryList: event.categories,
+          nameValue: _selectedProduct.name,
+          priceValue: _selectedProduct.price,
+          descValue: _selectedProduct.description,
+          imagesNetwork: _selectedProduct.images,
+          selectedCategory: category,
+          categoryValue: category.name
       ));
     }
-    if(event is AddImagesToModel) yield(state.update(images: event.images));
-    if(event is AddSelectedCategoryModel) yield(state.update(selectedCategory: event.selectedCategory,categoryValue: event.selectedCategory.name));
-    if(event is AddSelectedSubCategoryModel) yield(state.update(selectedSubCategory: event.selectedSubCategory,subCategoryValue: event.selectedSubCategory.name));
-    if(event is UpdateProduct){
+    if (event is AddImagesToModel) yield(state.update(images: event.images));
+    if (event is AddSelectedCategoryModel) yield(state.update(
+        selectedCategory: event.selectedCategory,
+        categoryValue: event.selectedCategory.name));
+    if (event is AddSelectedSubCategoryModel) yield(state.update(
+        selectedSubCategory: event.selectedSubCategory,
+        subCategoryValue: event.selectedSubCategory.name));
+    if (event is UpdateProduct) {
       yield state.update(isLoading: true);
-      yield* _mapToUpdateProductProductState(state,event,event.context);
+      yield* _mapToUpdateProductProductState(state, event, event.context);
     }
-    if(event is StopLoading) yield state.update(isLoading: false);
-    if(event is DeleteUrlImage) {
+    if (event is StopLoading) yield state.update(isLoading: false);
+    if (event is DeleteUrlImage) {
       yield state.update(isLoading: true);
-      yield* _mapToDeleteImageState(state,event,event.context);
-
+      yield* _mapToDeleteImageState(state, event, event.context);
     }
 
-    if(event is SuccessfulyDeletedImage) {
+    if (event is SuccessfulyDeletedImage) {
       List<String> imagesNetwork = state.imagesNetwork;
       imagesNetwork.removeWhere((element) => element == event.deletedImageUrl);
-      yield state.update(imagesNetwork: imagesNetwork,isLoading: false);
+      yield state.update(imagesNetwork: imagesNetwork, isLoading: false);
     }
 
-    if(event is DeleteAssetImage) {
+    if (event is DeleteAssetImage) {
       List<Asset> images = state.images;
       images.removeWhere((element) => element == event.deleteImageAsset);
-      yield state.update(images: images,isLoading: false);
-
+      yield state.update(images: images, isLoading: false);
     }
+
+    if (event is EnableDisableProduct) {
+      yield state.update(isLoading: true);
+      yield* _mapEnableOrDisableProductToState(state, event);
+    }
+
+    if (event is EnableDisableProductSuccessfully) yield state.update(
+        isEnabled: event.isEnabled, isLoading: false);
   }
 
 
-  Stream<EditProductState> _mapToUpdateProductProductState(EditProductState state,EditProductEvent event, BuildContext context) async* {
+  Stream<EditProductState> _mapToUpdateProductProductState(
+      EditProductState state, EditProductEvent event,
+      BuildContext context) async* {
     _categorySubscription?.cancel();
 
     String catId = "";
 
-    if(state.selectedSubCategory != null){
+    if (state.selectedSubCategory != null) {
       catId = state.selectedSubCategory.uId;
-    }else{
+    } else {
       catId = state.selectedCategory.uId;
     }
 
@@ -103,17 +127,24 @@ class EditProductBloc extends Bloc<EditProductEvent, EditProductState> {
       catId: catId,
     );
 
-    _productRepository.updateProduct(productObj:  updatedProduct,context: context,assetImages: state.images);
-
+    _productRepository.updateProduct(productObj: updatedProduct,
+        context: context,
+        assetImages: state.images);
   }
 
-  Stream<EditProductState> _mapToDeleteImageState(EditProductState state,DeleteUrlImage event,BuildContext context) async* {
+  Stream<EditProductState> _mapToDeleteImageState(EditProductState state,
+      DeleteUrlImage event, BuildContext context) async* {
     _categorySubscription?.cancel();
 
-    _productRepository.deleteImage(context: context,uid:_selectedProduct.uid,image: event.deletedImageUrl);
-
+    _productRepository.deleteImage(context: context,
+        uid: _selectedProduct.uid,
+        image: event.deletedImageUrl);
   }
 
-
-
+  Stream<EditProductState> _mapEnableOrDisableProductToState(
+      EditProductState state, EnableDisableProduct event) async* {
+    _productRepository.enableDisableProduct(isEnable: event.isEnabled,
+        uid: _selectedProduct.uid,
+        context: event.context);
+  }
 }

@@ -12,6 +12,7 @@ class Product extends Equatable {
   final double lastBought;
   final int sold;
   final String stockQty;
+  final bool isEnabled;
 
   const Product({
     this.name,
@@ -23,7 +24,8 @@ class Product extends Equatable {
     this.price,
     this.description,
     this.lastBought,
-    this.sold
+    this.sold,
+    this.isEnabled
   });
 
   Map<String, dynamic> toJson() => {
@@ -36,6 +38,7 @@ class Product extends Equatable {
     "lastBought": lastBought,
     "sold": sold,
     "stockQty": stockQty,
+    "isEnabled" : isEnabled
   };
 
   static Product fromSnapshot(DocumentSnapshot snap) {
@@ -51,7 +54,8 @@ class Product extends Equatable {
       lastBought: snap['lastBought'],
       sold: snap['sold'],
       uid: snap.id,
-      stockQty:snap['stockQty']
+      stockQty:snap['stockQty'],
+        isEnabled :snap['isEnabled']
     );
 
     return product;
@@ -67,7 +71,8 @@ class Product extends Equatable {
      String description,
      double lastBought,
      int sold,
-     String stockQty
+     String stockQty,
+    bool isEnabled
   }) {
 
 
@@ -89,6 +94,7 @@ class Product extends Equatable {
       lastBought: lastBought ?? this.lastBought,
       sold: sold ?? this.sold,
       stockQty: stockQty ?? this.stockQty,
+      isEnabled: isEnabled ?? this.isEnabled
     );
   }
 
@@ -102,6 +108,6 @@ class Product extends Equatable {
         lastBought,
         sold,
         uid,
-        stockQty
+        stockQty,isEnabled
       ];
 }
