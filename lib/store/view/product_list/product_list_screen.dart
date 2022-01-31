@@ -10,8 +10,10 @@ import 'package:merch/models/category_model.dart';
 import 'package:merch/models/product_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:merch/repositories/product/product_repository.dart';
+import 'package:merch/store/bloc/history_list/history_list_bloc.dart';
 import 'package:merch/store/bloc/product_detail/product_detail_user_bloc.dart';
 import 'package:merch/store/bloc/product_list/product_user_bloc.dart';
+import 'package:merch/store/view/history_list/history_list_screen.dart';
 import 'package:merch/store/view/product_detail_user/product_detail_user_screen.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -30,6 +32,32 @@ class ProductListScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Home',),
           actions: [
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                            create: (context) =>
+                                HistoryListBloc(productRepository: ProductRepository()),
+                            child: HistoryListScreen())));
+              },
+              child: Container(
+                margin: EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.only(right: 5,left: 5),
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                        colors: primaryGradientColors
+                    )
+                ),
+                child: Icon(
+                  Icons.history_toggle_off,
+                  color: Colors.black,
+                  size: SizeConfig.blockSizeHorizontal * 6.5,
+                ),
+              ),
+            ),
             InkWell(
               onTap: () {
                 return filterBottomSheet(context);

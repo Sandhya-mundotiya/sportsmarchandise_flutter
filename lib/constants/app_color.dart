@@ -18,3 +18,4 @@ const primaryGradientColors = [
 const borderColor = Color(0xFFB37A5F);
 const darkWoodColor = Color(0xFFA45A51);
 const appUnAvalibleColor = Color(0xFFDE0002);
+const backgroundLightColor = Color(0xFFEFEFEB);
