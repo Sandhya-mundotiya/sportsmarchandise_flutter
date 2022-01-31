@@ -1,9 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:merch/models/product_model.dart';
 import 'package:merch/repositories/product/product_repository.dart';
 
@@ -12,7 +9,7 @@ part 'product_detail_user_event.dart';
 part 'product_detail_user_state.dart';
 
 class ProductDetailUserBloc extends Bloc<ProductDetailUserEvent, ProductDetailUserState> {
-  String _productId = "";
+  final String _productId;
   final ProductRepository _productRepository;
   StreamSubscription _productSubscription;
 

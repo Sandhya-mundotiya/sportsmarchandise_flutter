@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:intl/intl.dart';
 import 'package:merch/constants/app_color.dart';
 import 'package:merch/constants/string_constant.dart';
 import 'package:merch/constants/utils/size_config.dart';
@@ -139,7 +138,6 @@ class ProductListScreen extends StatelessWidget {
                         height: SizeConfig.blockSizeVertical * 20,
                         width: SizeConfig.blockSizeHorizontal * 50,
                         placeholder: (context, url) => Container(
-                              // padding: EdgeInsets.only(top: SizeConfig.blockSizeVertical*25,left: SizeConfig.blockSizeHorizontal*4,right: SizeConfig.blockSizeVertical*4),
                               child: Shimmer.fromColors(
                                 baseColor: Colors.grey[300],
                                 highlightColor: Colors.grey[100],
@@ -222,33 +220,9 @@ class ProductListScreen extends StatelessWidget {
             height: MediaQuery.of(context).size.height * 0.5,
             decoration: const BoxDecoration(
               color: Colors.white,
-              // borderRadius: BorderRadius.only(
-              //   topLeft: Radius.circular(25.0),
-              //   topRight: Radius.circular(25.0),
-              // ),
             ),
             child: Column(
               children: [
-                // AppBar(
-                //   centerTitle: true,
-                //   backgroundColor: primaryColor,
-                //   title: Text("Filter by",
-                //       style: const TextStyle(color: appWhite)),
-                //   automaticallyImplyLeading: false,
-                //   actions: [
-                //     InkWell(
-                //       onTap: () {
-                //         Navigator.pop(context);
-                //         context.read<ProductUserBloc>().add(ClearFilters());
-                //       },
-                //       child: const Padding(
-                //         padding: EdgeInsets.all(8.0),
-                //         child: Icon(Icons.close, color: appWhite, size: 25),
-                //       ),
-                //     ),
-                //   ],
-                // ),
-
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(

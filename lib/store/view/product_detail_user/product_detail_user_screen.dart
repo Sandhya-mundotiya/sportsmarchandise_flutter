@@ -15,7 +15,6 @@ import 'package:shimmer/shimmer.dart';
 class ProductDetailUserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    List<Widget> widgetList = [];
     return WillPopScope(
       onWillPop: () {
         Navigator.pop(context);
@@ -51,9 +50,6 @@ class ProductDetailUserScreen extends StatelessWidget {
                             builder: (context, state) {
                               return CarouselSlider(
                                 options: CarouselOptions(
-                                    // aspectRatio: 16 / 9,
-                                    // viewportFraction: 0.8,
-
                                     height: SizeConfig.blockSizeVertical * 36,
                                     initialPage: 0,
                                     enableInfiniteScroll: false,
@@ -64,7 +60,6 @@ class ProductDetailUserScreen extends StatelessWidget {
                                     enlargeCenterPage: true,
                                     scrollDirection: Axis.horizontal,
                                     onPageChanged: (index, reason) {
-                                      //_current = index;
                                       context.read<ProductDetailUserBloc>().add(
                                           UpdateCarouselIndex(
                                               carouselCurentIndex: index));
@@ -248,7 +243,34 @@ class ProductDetailUserScreen extends StatelessWidget {
                                         ),
                                       ),
                                     )
-                                  : SizedBox();
+                                  : Align(
+                                alignment: Alignment.center,
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        //  color: primaryColor,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50)),
+                                        color: borderColor.withOpacity(0.6)
+                                          ),
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 6, horizontal: 5),
+                                      child: MaterialButton(
+                                        child: Text(
+                                          "Buy Now",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 5,),
+                                    Text("Currently Unavailable",style: TextStyle(color: appUnAvalibleColor,),)
+                                  ],
+                                ),
+                              );
                             },
                           )
                         ],

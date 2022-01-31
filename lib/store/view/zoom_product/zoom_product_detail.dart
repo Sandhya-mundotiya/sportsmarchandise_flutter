@@ -68,7 +68,6 @@ class ZoomProductDetail extends StatelessWidget {
                           initialScale: PhotoViewComputedScale.contained * 0.5,
                           minScale: PhotoViewComputedScale.contained * 1,
                           maxScale: PhotoViewComputedScale.covered * 3,
-                          //heroAttributes: PhotoViewHeroAttributes(tag: productImages[index]),
                         );
                       },
                       itemCount: state.images.length,
@@ -81,8 +80,6 @@ class ZoomProductDetail extends StatelessWidget {
                               ),
                             ),
                           ),
-                      // backgroundDecoration: widget.backgroundDecoration,
-                      // pageController: widget.pageController,
                       onPageChanged: (page){
                         context.read<ZoomProductDetailBloc>().add(
                             UpdatePageIndex(
