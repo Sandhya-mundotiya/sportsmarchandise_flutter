@@ -14,6 +14,7 @@ import 'package:merch/admin/bloc/edit_product/edit_product_bloc.dart'
     as edit_product_bloc;
 import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/firestore_constants.dart';
+import 'package:merch/constants/utils/navigation_service.dart';
 import 'package:merch/constants/utils/school.dart';
 import 'package:merch/models/product_model.dart';
 import 'package:merch/repositories/product/base_product_repository.dart';
@@ -314,17 +315,24 @@ class ProductRepository extends BaseProductRepository {
         print("paid successfully");
 
         snac('Product has been purchased successfully',success: true);
+        showAlertDialog(
+            message: 'Product has been purchased successfully',
+          isShowBtn1: false,
+          onTapBtn2: (){
+              Navigator.pop(NavigationService.navigatorKey.currentContext);
+          }
+        );
 
         paymentIntentData = null;
 
       }).onError((error, stackTrace){
-        print('Exception/DISPLAYPAYMENTSHEET==> $error $stackTrace');
+        // print('Exception/DISPLAYPAYMENTSHEET==> $error $stackTrace');
       });
 
 
     } on StripeException catch (e) {
-      print('Exception/DISPLAYPAYMENTSHEET==> $e');
-      print("Cancelled");
+      // print('Exception/DISPLAYPAYMENTSHEET==> $e');
+      // print("Cancelled");
     } catch (e) {
       print('$e');
     }

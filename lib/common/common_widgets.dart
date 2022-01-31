@@ -293,3 +293,79 @@ Widget appButton(Function onClick,{int fontSize,FontWeight weight,String text,bo
     ),
   );
 }
+
+
+showAlertDialog({
+  String message,String title = "Success",
+  String button1Name = "Cancel", String button2Name = "OK",Function onTapBtn1,Function onTapBtn2,bool isShowBtn1 = true}) {
+
+
+  // set up the button
+  Widget btn2 = Container(
+    decoration: BoxDecoration(
+      //  color: primaryColor,
+        borderRadius: BorderRadius.all(
+            Radius.circular(50)),
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: primaryGradientColors,
+        )),
+    padding: EdgeInsets.symmetric(
+        vertical: 6, horizontal: 5),
+    child: MaterialButton(
+      onPressed: onTapBtn2,
+      child: Text(
+        button2Name,
+        style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
+
+  // set up the button
+  Widget btn1 = Container(
+    decoration: BoxDecoration(
+      //  color: primaryColor,
+        borderRadius: BorderRadius.all(
+            Radius.circular(50)),
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: primaryGradientColors,
+        )),
+    padding: EdgeInsets.symmetric(
+        vertical: 6, horizontal: 5),
+    child: MaterialButton(
+      onPressed: onTapBtn1,
+      child: Text(
+
+        button1Name,
+        style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
+
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text(title),
+    content: Text(message),
+    actions: [
+      if(isShowBtn1) btn1,
+    btn2,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: NavigationService.navigatorKey.currentContext,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}

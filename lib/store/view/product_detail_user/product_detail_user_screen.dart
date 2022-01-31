@@ -8,6 +8,8 @@ import 'package:merch/constants/utils/size_config.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:merch/store/bloc/product_detail/product_detail_user_bloc.dart';
+import 'package:merch/store/bloc/zoom_product_detail/zoom_product_detail_bloc.dart';
+import 'package:merch/store/view/zoom_product/zoom_product_detail.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ProductDetailUserScreen extends StatelessWidget {
@@ -51,6 +53,7 @@ class ProductDetailUserScreen extends StatelessWidget {
                                 options: CarouselOptions(
                                     // aspectRatio: 16 / 9,
                                     // viewportFraction: 0.8,
+
                                     height: SizeConfig.blockSizeVertical * 36,
                                     initialPage: 0,
                                     enableInfiniteScroll: false,
@@ -69,50 +72,68 @@ class ProductDetailUserScreen extends StatelessWidget {
                                 items: state.product.images.map((image) {
                                   return Builder(
                                     builder: (BuildContext context) {
-                                      return Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Center(
-                                            child: CachedNetworkImage(
-                                                imageUrl: image,
-                                                fit: BoxFit.fill,
-                                                height: SizeConfig
-                                                        .blockSizeVertical *
-                                                    30,
-                                                width: SizeConfig
-                                                        .blockSizeHorizontal *
-                                                    70,
-                                                placeholder: (context, url) =>
-                                                    Container(
-                                                      child: Shimmer.fromColors(
-                                                        baseColor:
-                                                            Colors.grey[300],
-                                                        highlightColor:
-                                                            Colors.grey[100],
-                                                        child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Container(
-                                                                width: SizeConfig
-                                                                        .blockSizeHorizontal *
-                                                                    70,
-                                                                height: SizeConfig
-                                                                        .blockSizeVertical *
-                                                                    30,
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                            ]),
-                                                      ),
-                                                    )),
-                                          ),
-                                        ],
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      BlocProvider(
+                                                        create: (context) =>
+                                                            ZoomProductDetailBloc(
+                                                                images: state
+                                                                    .product
+                                                                    .images),
+                                                        child:
+                                                            ZoomProductDetail(),
+                                                      )));
+                                        },
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Center(
+                                              child: CachedNetworkImage(
+                                                  imageUrl: image,
+                                                  fit: BoxFit.fill,
+                                                  height: SizeConfig
+                                                          .blockSizeVertical *
+                                                      30,
+                                                  width: SizeConfig
+                                                          .blockSizeHorizontal *
+                                                      70,
+                                                  placeholder: (context, url) =>
+                                                      Container(
+                                                        child:
+                                                            Shimmer.fromColors(
+                                                          baseColor:
+                                                              Colors.grey[300],
+                                                          highlightColor:
+                                                              Colors.grey[100],
+                                                          child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .start,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Container(
+                                                                  width: SizeConfig
+                                                                          .blockSizeHorizontal *
+                                                                      70,
+                                                                  height: SizeConfig
+                                                                          .blockSizeVertical *
+                                                                      30,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                              ]),
+                                                        ),
+                                                      )),
+                                            ),
+                                          ],
+                                        ),
                                       );
                                     },
                                   );
@@ -213,7 +234,9 @@ class ProductDetailUserScreen extends StatelessWidget {
                                             vertical: 6, horizontal: 5),
                                         child: MaterialButton(
                                           onPressed: () {
-                                            context.read<ProductDetailUserBloc>().add(BuyProduct());
+                                            context
+                                                .read<ProductDetailUserBloc>()
+                                                .add(BuyProduct());
                                           },
                                           child: Text(
                                             "Buy Now",
