@@ -314,7 +314,7 @@ class ProductRepository extends BaseProductRepository {
 
         print("paid successfully");
 
-        snac('Product has been purchased successfully',success: true);
+       // snac('Product has been purchased successfully',success: true);
         showAlertDialog(
             message: 'Product has been purchased successfully',
           isShowBtn1: false,
