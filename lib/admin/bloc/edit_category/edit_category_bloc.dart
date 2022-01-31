@@ -43,8 +43,8 @@ class EditCategoryBloc extends Bloc<EditCategoryEvent, EditCategoryState> {
       }
 
       yield state.update(selectedCatOrSubCat: event.selctedCatOrSubCat,
-          selectedCategory: selectedCategory,nameValue: event.selctedCatOrSubCat.name,
-          descValue: event.selctedCatOrSubCat.description,
+          selectedCategory: selectedCategory,nameValue: event.selctedCatOrSubCat.name == SELECT_VALUE ? "" : event.selctedCatOrSubCat.name,
+          descValue: event.selctedCatOrSubCat.description == null ? "" : event.selctedCatOrSubCat.description,
         isEnable: event.selctedCatOrSubCat.isEnabled
       );
     }
