@@ -67,7 +67,7 @@ class ZoomProductDetail extends StatelessWidget {
                           ),
                           initialScale: PhotoViewComputedScale.contained * 0.5,
                           minScale: PhotoViewComputedScale.contained * 1,
-                          maxScale: PhotoViewComputedScale.covered * 3,
+                          maxScale: PhotoViewComputedScale.contained * 4,
                         );
                       },
                       itemCount: state.images.length,
