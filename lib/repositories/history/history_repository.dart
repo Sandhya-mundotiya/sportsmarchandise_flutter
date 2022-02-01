@@ -41,8 +41,9 @@ class HistoryRepository extends BaseHistoryRepository {
          },
            button1Name: "Go to History",
          onTapBtn1: (){
-           Navigator.pop(context);
-           Navigator.pop(context);
+           Navigator.of(context).popUntil((route){
+             return route.settings.name == 'ProductListScreen';
+           });
            Navigator.push(
                context,
                MaterialPageRoute(

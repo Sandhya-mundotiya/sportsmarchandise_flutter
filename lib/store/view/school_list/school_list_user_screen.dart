@@ -44,7 +44,12 @@ class SchoolsListUserScreen extends StatelessWidget{
     return InkWell(
       onTap: (){
         SchoolData.schoolId=school.uid;
-        Navigator.push(context,MaterialPageRoute(builder: (context) => ProductListScreen()));
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) {
+              return ProductListScreen();
+            },
+              settings: RouteSettings(name: 'ProductListScreen',),
+            ));
       },
       child: Row(
         children: [
