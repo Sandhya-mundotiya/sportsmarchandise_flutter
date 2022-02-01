@@ -59,6 +59,7 @@ class HomeScreen extends StatelessWidget {
           actions: [
             InkWell(
               onTap: () {
+                context.read<ProductBloc>().add(ClearFilters());
                 Navigator.push(
                     context,
                     MaterialPageRoute(
