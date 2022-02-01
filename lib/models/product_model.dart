@@ -9,23 +9,23 @@ class Product extends Equatable {
   final String price;
   final int createdDate;
   final String description;
-  final double lastBought;
+  final int lastBought;
   final int sold;
   final String stockQty;
   final bool isEnabled;
 
   const Product({
-    this.name,
-    this.stockQty,
-    this.createdDate,
-    this.uid,
-    this.catId,
+    this.name = "",
+    this.stockQty = "",
+    this.createdDate = 0,
+    this.uid = "",
+    this.catId = "",
     this.images,
-    this.price,
-    this.description,
-    this.lastBought,
-    this.sold,
-    this.isEnabled
+    this.price = "",
+    this.description = "",
+    this.lastBought = 0,
+    this.sold = 0,
+    this.isEnabled = true
   });
 
   Map<String, dynamic> toJson() => {
@@ -69,7 +69,7 @@ class Product extends Equatable {
      String price,
      int createdDate,
      String description,
-     double lastBought,
+    int lastBought,
      int sold,
      String stockQty,
     bool isEnabled

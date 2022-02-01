@@ -1,13 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:intl/intl.dart';
+import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/app_color.dart';
-import 'package:merch/constants/string_constant.dart';
 import 'package:merch/constants/utils/size_config.dart';
-import 'package:merch/models/category_model.dart';
-import 'package:merch/models/product_model.dart';
+import 'package:merch/models/product_history_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:merch/repositories/product/product_repository.dart';
 import 'package:merch/store/bloc/history_list/history_list_bloc.dart';
@@ -41,9 +39,7 @@ class HistoryListScreen extends StatelessWidget {
                 child: BlocBuilder<HistoryListBloc, HistoryListState>(
                   builder: (context, state) {
                     if (state.isLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return loader();
                     }
 
                     if (!state.isLoading) {
@@ -63,7 +59,7 @@ class HistoryListScreen extends StatelessWidget {
                       )
                           : const Center(
                           child: Text(
-                            'No Product Found',
+                            'No History Found',
                             style: TextStyle(color: Colors.black),
                           ));
                     } else {
@@ -79,7 +75,7 @@ class HistoryListScreen extends StatelessWidget {
     );
   }
 
-  Widget productListItem(context, Product product) {
+  Widget productListItem(context, ProductHistoryModel product) {
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -87,7 +83,7 @@ class HistoryListScreen extends StatelessWidget {
             MaterialPageRoute(
                 builder: (context) => BlocProvider(
                     create: (context) =>
-                        ProductDetailUserBloc(productId: product.uid,productRepository: ProductRepository()),
+                        ProductDetailUserBloc(productId: product.productId,productRepository: ProductRepository()),
                     child: ProductDetailUserScreen())));
       },
       child: Padding(
@@ -106,7 +102,7 @@ class HistoryListScreen extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (product.images != null && product.images.length > 0)
+                if (product.image != null && product.image.length > 0)
                   Padding(
                     padding: EdgeInsets.symmetric(
                         vertical: SizeConfig.blockSizeHorizontal * 1.8,
@@ -114,7 +110,7 @@ class HistoryListScreen extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(15),
                       child: Container(
-                        width: SizeConfig.blockSizeHorizontal*30,
+                        width: SizeConfig.blockSizeHorizontal*20,
 
                         foregroundDecoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.0),
@@ -124,7 +120,7 @@ class HistoryListScreen extends StatelessWidget {
                           child: AspectRatio(
                             aspectRatio: 1,
                             child: CachedNetworkImage(
-                                imageUrl: product.images[0],
+                                imageUrl: product.image,
                                 fit: BoxFit.fill,
                                 placeholder: (context, url) => Container(
                                   child: Shimmer.fromColors(
@@ -137,9 +133,9 @@ class HistoryListScreen extends StatelessWidget {
                                         children: [
                                           Container(
                                             width:
-                                            SizeConfig.blockSizeHorizontal*30,
+                                            SizeConfig.blockSizeHorizontal*20,
                                             height:
-                                            SizeConfig.blockSizeHorizontal*30,
+                                            SizeConfig.blockSizeHorizontal*20,
                                             color: Colors.white,
                                           ),
                                         ]),
@@ -153,8 +149,8 @@ class HistoryListScreen extends StatelessWidget {
                 Container(
                   width: SizeConfig.blockSizeHorizontal * 50,
                   padding: EdgeInsets.only(
-                    left: SizeConfig.blockSizeHorizontal * 5,
-                    right: SizeConfig.blockSizeHorizontal * 3,
+                    left: SizeConfig.blockSizeHorizontal * 3,
+                    right: SizeConfig.blockSizeHorizontal * 2,
                     bottom: SizeConfig.blockSizeHorizontal * 5,
                   ),
                   child: Column(
@@ -181,7 +177,7 @@ class HistoryListScreen extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.only(
                             top: SizeConfig.blockSizeHorizontal * 2),
-                        child: Text("₹" + product.price,
+                        child: Text("Ordered on " + DateFormat("dd-MMM-yyyy").format(DateTime.fromMicrosecondsSinceEpoch(product.createdAt)),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
                             style: TextStyle(

@@ -14,5 +14,5 @@ abstract class BaseProductRepository {
   deleteImage({String image, BuildContext context,String uid});
 
   enableDisableProduct({String uid,BuildContext context,bool isEnable});
-  buyProduct({String uid,BuildContext context,String amount});
+  buyProduct({Product product,BuildContext context,});
 }

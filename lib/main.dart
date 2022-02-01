@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:merch/admin/bloc/category/category_bloc.dart';
+import 'package:merch/admin/bloc/history_list/history_list_admin_bloc.dart';
 import 'package:merch/admin/bloc/product/product_bloc.dart';
 import 'package:merch/admin/bloc/school/school_bloc.dart';
 import 'package:merch/common/app_bloc_observer.dart';
@@ -13,6 +14,7 @@ import 'package:merch/constants/app_color.dart';
 import 'package:merch/constants/utils/navigation_service.dart';
 import 'package:merch/firebase_options.dart';
 import 'package:merch/repositories/category/category_repository.dart';
+import 'package:merch/repositories/history/history_repository.dart';
 import 'package:merch/repositories/product/product_repository.dart';
 import 'package:merch/repositories/school/school_repository.dart';
 import 'package:merch/store/bloc/product_list/product_user_bloc.dart' as product_user_bloc;
@@ -53,6 +55,13 @@ class MyApp extends StatelessWidget {
           create: (context) => product_user_bloc.ProductUserBloc(
               productRepository: ProductRepository(),categoryBloc: BlocProvider.of<CategoryBloc>(context)
           )..add(product_user_bloc.LoadProducts()),
+        ),
+
+        BlocProvider(
+          create: (context) => HistoryListAdminBloc(
+            categoryBloc: BlocProvider.of<CategoryBloc>(context),
+            historyRepository: HistoryRepository()
+              ),
         ),
 
         BlocProvider(

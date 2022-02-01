@@ -16,8 +16,11 @@ import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/firestore_constants.dart';
 import 'package:merch/constants/utils/navigation_service.dart';
 import 'package:merch/constants/utils/school.dart';
+import 'package:merch/models/product_history_model.dart';
 import 'package:merch/models/product_model.dart';
+import 'package:merch/repositories/history/history_repository.dart';
 import 'package:merch/repositories/product/base_product_repository.dart';
+import 'package:merch/store/bloc/product_detail/product_detail_user_bloc.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -295,7 +298,7 @@ class ProductRepository extends BaseProductRepository {
     return a.toString();
   }
 
-  displayPaymentSheet() async {
+  displayPaymentSheet({Product product,BuildContext context,}) async {
 
     try {
       await Stripe.instance.presentPaymentSheet(
@@ -304,46 +307,83 @@ class ProductRepository extends BaseProductRepository {
             confirmPayment: true,
           )).then((newValue){
 
-
-        print('payment intent'+paymentIntentData['id'].toString());
-        print('payment intent'+paymentIntentData['client_secret'].toString());
-        print('payment intent'+paymentIntentData['amount'].toString());
-        print('payment intent'+paymentIntentData.toString());
-        //orderPlaceApi(paymentIntentData!['id'].toString());
-        //  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("paid successfully")));
-
-        print("paid successfully");
-
-       // snac('Product has been purchased successfully',success: true);
-        showAlertDialog(
-            message: 'Product has been purchased successfully',
-          isShowBtn1: false,
-          onTapBtn2: (){
-              Navigator.pop(NavigationService.navigatorKey.currentContext);
-          }
+        updatePurchaseDate(product: product,
+            paymentId: paymentIntentData['id'].toString(),
+          clientSecretId: paymentIntentData['client_secret'].toString(),
+          amount: paymentIntentData['amount'].toString(),
+          context: context
         );
-
         paymentIntentData = null;
 
       }).onError((error, stackTrace){
-        // print('Exception/DISPLAYPAYMENTSHEET==> $error $stackTrace');
+
       });
 
 
     } on StripeException catch (e) {
-      // print('Exception/DISPLAYPAYMENTSHEET==> $e');
-      // print("Cancelled");
     } catch (e) {
-      print('$e');
     }
   }
 
+  Future<String> updatePurchaseDate({Product product,String paymentId, String clientSecretId, String amount,BuildContext context,}) {
+
+    var currentDate = DateTime.now();
+    DateTime formattedDate = new DateTime(currentDate.year, currentDate.month, currentDate.day);
+
+    _firebaseFirestore
+        .collection(SCHOOL_TABLE)
+        .doc(SchoolData.schoolId)
+        .collection(PRODUCT_TABLE)
+        .doc(product.uid)
+        .update(
+      {
+       'lastBought': formattedDate.microsecondsSinceEpoch,
+        'sold' : (product.sold != null && product.sold != 0 && product.sold != "") ? product.sold+1 : 1
+      },
+    ).then((value) {
+      saveHistoryEntry(product: product,
+          paymentId: paymentId,
+          clientSecretId: clientSecretId,
+          amount: amount,context: context
+      );
+
+    }).catchError((error) => print("Failed to update category: $error"));
+  }
+
+  saveHistoryEntry({Product product,String paymentId, String clientSecretId, String amount,BuildContext context,}) async{
+
+    var currentDate = DateTime.now();
+    DateTime formattedDate = new DateTime(currentDate.year, currentDate.month, currentDate.day);
+
+
+    double amt = (int.parse(amount))/100;
+    String amtString = amt.toString();
+
+    ProductHistoryModel historyProduct = ProductHistoryModel(
+      productId: product.uid,
+      name: product.name,
+      price: product.price,
+      description: product.description,
+      image: product.images[0],
+      stripePaymentId: paymentId,
+      stripeClientSecretId: clientSecretId,
+      createdAt: formattedDate.microsecondsSinceEpoch,
+      stripeAmount: amtString,
+        catId: product.catId,
+        adminId: "",
+      uid: "",
+      userId: "",
+    );
+
+    HistoryRepository historyRep = HistoryRepository();
+    await historyRep.addHistoryProduct(productObj: historyProduct,context: context);
+  }
+
   @override
-  buyProduct({String uid, BuildContext context, String amount}) async{
+  buyProduct({Product product,BuildContext context,}) async{
     try {
 
-      paymentIntentData = await createPaymentIntent(amount, 'USD'); //json.decode(response.body);
-// print('Response body==>${response.body.toString()}');
+      paymentIntentData = await createPaymentIntent(product.price, 'USD');
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
               paymentIntentClientSecret: paymentIntentData['client_secret'],
@@ -355,9 +395,7 @@ class ProductRepository extends BaseProductRepository {
               merchantDisplayName: 'ANNIE')).then((value){
       });
 
-
-      ///now finally display payment sheeet
-      displayPaymentSheet();
+      displayPaymentSheet(product: product,context: context);
 
     } catch (e, s) {
       print('exception:$e$s');

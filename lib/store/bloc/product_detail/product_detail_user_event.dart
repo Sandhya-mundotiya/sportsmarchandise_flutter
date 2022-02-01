@@ -31,6 +31,21 @@ class UpdateCarouselIndex extends ProductDetailUserEvent{
 }
 
 class BuyProduct extends ProductDetailUserEvent{
+  final BuildContext context;
+
+  BuyProduct(this.context);
+  @override
+  List<Object> get props => [];
+
+}
+
+class StartLoading extends ProductDetailUserEvent{
+  @override
+  List<Object> get props => [];
+
+}
+
+class StopLoading extends ProductDetailUserEvent{
   @override
   List<Object> get props => [];
 

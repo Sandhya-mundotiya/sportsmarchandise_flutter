@@ -16,7 +16,6 @@ part 'product_state.dart';
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final ProductRepository _productRepository;
   StreamSubscription _productSubscription;
-  StreamSubscription categorySubscription;
 
   final CategoryBloc categoryBloc;
 
@@ -79,7 +78,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   @override
   Future<void> close() {
-    categorySubscription.cancel();
     _productSubscription.cancel();
     return super.close();
   }

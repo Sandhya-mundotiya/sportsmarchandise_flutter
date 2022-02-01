@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:merch/models/product_model.dart';
 import 'package:merch/repositories/product/product_repository.dart';
 
@@ -33,7 +34,12 @@ class ProductDetailUserBloc extends Bloc<ProductDetailUserEvent, ProductDetailUs
     }
 
     if(event is UpdateCarouselIndex) yield state.update(carouselCurentIndex: event.carouselCurentIndex);
-    if(event is BuyProduct) yield* makePayment(state);
+    if(event is BuyProduct) {
+      yield state.update(isLoading: true);
+      yield* makePayment(state,event );
+    }
+    if(event is StartLoading) yield state.update(isLoading: true);
+    if(event is StopLoading) yield state.update(isLoading: false);
 
   }
 
@@ -48,8 +54,8 @@ class ProductDetailUserBloc extends Bloc<ProductDetailUserEvent, ProductDetailUs
   }
 
 
-  Stream<ProductDetailUserState> makePayment(ProductDetailUserState state) async* {
-    _productRepository.buyProduct(uid: state.product.uid,amount: state.product.price);
+  Stream<ProductDetailUserState> makePayment(ProductDetailUserState state,BuyProduct event) async* {
+    _productRepository.buyProduct(product: state.product, context: event.context);
   }
 
 

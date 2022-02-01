@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/app_color.dart';
 import 'package:merch/constants/utils/size_config.dart';
 import 'package:merch/store/bloc/zoom_product_detail/zoom_product_detail_bloc.dart';
@@ -14,7 +15,7 @@ class ZoomProductDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ZoomProductDetailBloc, ZoomProductDetailState>(
       builder: (context, state) {
-        return state.isLoading ? CircularProgressIndicator() : Container(
+        return state.isLoading ? loader() : Container(
           color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,

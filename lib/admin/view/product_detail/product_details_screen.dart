@@ -26,7 +26,7 @@ class ProductDetailsScreen extends StatelessWidget {
         body: BlocBuilder<ProductDetailBloc, ProductDetailState>(
           builder: (context, state) {
             return state.isLoading
-                ? loader()
+                ? loaderAdmin()
                 : Padding(
                     padding: EdgeInsets.symmetric(
                         vertical: SizeConfig.blockSizeHorizontal * 5,

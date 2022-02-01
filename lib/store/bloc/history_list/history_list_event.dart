@@ -10,7 +10,7 @@ class LoadHistoryProducts extends HistoryListEvent {
 }
 
 class UpdateHistoryProducts extends HistoryListEvent {
-  final List<Product> products;
+  final List<ProductHistoryModel> products;
 
   UpdateHistoryProducts(this.products);
 

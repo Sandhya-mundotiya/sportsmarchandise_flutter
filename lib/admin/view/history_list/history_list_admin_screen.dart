@@ -1,78 +1,35 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:merch/admin/bloc/history_list/history_list_admin_bloc.dart';
 import 'package:merch/admin/bloc/product_detail/product_detail_bloc.dart';
-import 'package:merch/admin/view/add_item/add_product.dart';
-import 'package:merch/admin/view/edit_product/edit_product_screen.dart';
-import 'package:merch/admin/bloc/add_product/add_product_bloc.dart';
-import 'package:merch/admin/bloc/category/category_bloc.dart';
-import 'package:merch/admin/bloc/edit_product/edit_product_bloc.dart';
-import 'package:merch/admin/view/history_list/history_list_admin_screen.dart';
-import 'package:merch/common/common_widgets.dart';
-import 'package:merch/constants/string_constant.dart';
 import 'package:merch/admin/view/product_detail/product_details_screen.dart';
-import 'package:merch/admin/bloc/product/product_bloc.dart';
+import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/app_color.dart';
+import 'package:merch/constants/string_constant.dart';
 import 'package:merch/constants/utils/size_config.dart';
 import 'package:merch/models/category_model.dart';
-import 'package:merch/models/product_model.dart';
-import 'package:merch/repositories/history/history_repository.dart';
-import 'package:merch/repositories/product/product_repository.dart'
-    as product_repo;
+import 'package:merch/models/product_history_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:merch/repositories/product/product_repository.dart';
 import 'package:shimmer/shimmer.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({Key key, this.schoolId}) : super(key: key);
-  String schoolId;
+class HistoryListAdminScreen extends StatelessWidget {
+  const HistoryListAdminScreen({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
         Navigator.pop(context);
-        context.read<ProductBloc>().add(ClearFilters());
+        context.read<HistoryListAdminBloc>().add(ClearFiltersHistory());
         return;
       },
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: primaryColor,
-            onPressed: () {
-              context.read<ProductBloc>().add(ClearFilters());
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                            create: (context) => AddProductBloc(
-                                categoryBloc: context.read<CategoryBloc>(),
-                                productRepository:
-                                    product_repo.ProductRepository()),
-                            child: AddProductScreen(schoolId: schoolId),
-                          )));
-            },
-            child: const Icon(Icons.add, color: Colors.white)),
         appBar: AppBar(
-          title: const Text('Home'),
+          title: const Text('History',),
           actions: [
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => HistoryListAdminScreen()));
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: Icon(
-                  Icons.history_toggle_off,
-                  color: Colors.black,
-                  size: SizeConfig.blockSizeHorizontal * 7.5,
-                ),
-              ),
-            ),
             InkWell(
               onTap: () {
                 return filterBottomSheet(context);
@@ -88,56 +45,61 @@ class HomeScreen extends StatelessWidget {
             )
           ],
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child: BlocBuilder<ProductBloc, ProductState>(
-                builder: (context, state) {
-                  if (state.isLoading) {
-                    return loaderAdmin();
-                  }
+        body: Container(
+          decoration: BoxDecoration(
+          color: appWhite
+              ),
+          child: Column(
+            children: [
+              Expanded(
+                child: BlocBuilder<HistoryListAdminBloc, HistoryListAdminState>(
+                  builder: (context, state) {
+                    if (state.isLoading) {
+                      return loaderAdmin();
+                    }
 
-                  if (!state.isLoading) {
-                    return state.products.isNotEmpty
-                        ? Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: SizeConfig.blockSizeHorizontal * 1.8,
-                                horizontal:
-                                    SizeConfig.blockSizeHorizontal * 1.8),
-                            child: AlignedGridView.count(
-                              crossAxisCount: 2,
-                              itemCount: state.products.length,
-                              itemBuilder: (context, index) {
-                                return productListItem(
-                                    context, state.products[index]);
-                              },
-                            ),
-                          )
-                        : const Center(
-                            child: Text(
-                            'No Product Found',
+                    if (!state.isLoading) {
+                      return state.products.isNotEmpty
+                          ? Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: SizeConfig.blockSizeHorizontal * 1.8,
+                            horizontal:
+                            SizeConfig.blockSizeHorizontal * 1.8),
+                        child: ListView.builder(
+                          itemCount: state.products.length,
+                          itemBuilder: (context, index) {
+                            return productListItem(
+                                context, state.products[index]);
+                          },
+                        ),
+                      )
+                          : const Center(
+                          child: Text(
+                            'No History Found',
                             style: TextStyle(color: Colors.black),
                           ));
-                  } else {
-                    return const Text('Something went wrong.');
-                  }
-                },
-              ),
-            )
-          ],
+                    } else {
+                      return const Text('Something went wrong.');
+                    }
+                  },
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget productListItem(context, Product product) {
+  Widget productListItem(context, ProductHistoryModel product) {
     return InkWell(
       onTap: () {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => BlocProvider(
-                    create: (context) => ProductDetailBloc(productRepository: product_repo.ProductRepository(),productId: product.uid),
+                    create: (context) =>
+                        ProductDetailBloc(productId: product.productId,productRepository: ProductRepository()),
                     child: ProductDetailsScreen())));
       },
       child: Padding(
@@ -147,51 +109,65 @@ class HomeScreen extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(15),
           child: Container(
+            width: SizeConfig.blockSizeHorizontal * 50,
             foregroundDecoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15.0),
-              border: Border.all(
-                  color: Colors.grey,
-                  width: 1.0
-              ),
-
+              border: Border.all(color: Colors.grey, width: 1.0),
             ),
-            width: SizeConfig.blockSizeHorizontal * 50,
-            child: Column(
+
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (product.images != null && product.images.length > 0)
-                  Center(
-                    child: CachedNetworkImage(
-                        imageUrl: product.images[0],
-                        fit: BoxFit.fill,
-                        height: SizeConfig.blockSizeVertical * 20,
-                        width: SizeConfig.blockSizeHorizontal * 50,
-                        placeholder: (context, url) => Container(
-                              // padding: EdgeInsets.only(top: SizeConfig.blockSizeVertical*25,left: SizeConfig.blockSizeHorizontal*4,right: SizeConfig.blockSizeVertical*4),
-                              child: Shimmer.fromColors(
-                                baseColor: Colors.grey[300],
-                                highlightColor: Colors.grey[100],
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width:
-                                            SizeConfig.blockSizeHorizontal * 50,
-                                        height: SizeConfig.blockSizeVertical * 20,
-                                        color: Colors.white,
-                                      ),
-                                    ]),
-                              ),
-                            )),
+                if (product.image != null && product.image.length > 0)
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        vertical: SizeConfig.blockSizeHorizontal * 1.8,
+                        horizontal: SizeConfig.blockSizeHorizontal * 1.8),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Container(
+                        width: SizeConfig.blockSizeHorizontal*20,
+
+                        foregroundDecoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15.0),
+                          border: Border.all(color: appWhite,
+                              width: 1.0),
+                        ),
+                        child: Center(
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: CachedNetworkImage(
+                                imageUrl: product.image,
+                                fit: BoxFit.fill,
+                                placeholder: (context, url) => Container(
+                                  child: Shimmer.fromColors(
+                                    baseColor: Colors.grey[300],
+                                    highlightColor: Colors.grey[100],
+                                    child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width:
+                                            SizeConfig.blockSizeHorizontal*20,
+                                            height:
+                                            SizeConfig.blockSizeHorizontal*20,
+                                            color: Colors.white,
+                                          ),
+                                        ]),
+                                  ),
+                                )),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-
                 Container(
-
                   width: SizeConfig.blockSizeHorizontal * 50,
                   padding: EdgeInsets.only(
                     left: SizeConfig.blockSizeHorizontal * 3,
-                    right: SizeConfig.blockSizeHorizontal * 3,
+                    right: SizeConfig.blockSizeHorizontal * 2,
                     bottom: SizeConfig.blockSizeHorizontal * 5,
                   ),
                   child: Column(
@@ -204,40 +180,13 @@ class HomeScreen extends StatelessWidget {
                               padding: EdgeInsets.only(
                                   top: SizeConfig.blockSizeHorizontal * 4),
                               child: Text(product.name,
+                                  maxLines: 3,
                                   overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
                                   style: TextStyle(
-                                      fontSize: SizeConfig.blockSizeHorizontal * 4,
+                                      fontSize:
+                                      SizeConfig.blockSizeHorizontal * 4,
                                       fontWeight: FontWeight.w500,
                                       color: appBlack)),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => BlocProvider(
-                                            create: (context) => EditProductBloc(
-                                                categoryBloc: BlocProvider.of<
-                                                    CategoryBloc>(context),
-                                                productRepository: product_repo
-                                                    .ProductRepository(),
-                                                selectedProduct:
-                                                    product.copyWith()),
-                                            child: EditProductScreen(),
-                                          )));
-                            },
-                            child: Align(
-                              alignment: Alignment.bottomRight,
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                    top: SizeConfig.blockSizeHorizontal * 2),
-                                child: Icon(
-                                  Icons.edit,
-                                  size: 15,
-                                ),
-                              ),
                             ),
                           ),
                         ],
@@ -245,9 +194,9 @@ class HomeScreen extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.only(
                             top: SizeConfig.blockSizeHorizontal * 2),
-                        child: Text("₹" + product.price,
-                            maxLines: 2,
+                        child: Text("Ordered on " + DateFormat("dd-MMM-yyyy").format(DateTime.fromMicrosecondsSinceEpoch(product.createdAt)),
                             overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
                             style: TextStyle(
                                 fontSize: SizeConfig.blockSizeHorizontal * 3.5,
                                 fontWeight: FontWeight.bold,
@@ -270,7 +219,7 @@ class HomeScreen extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       isDismissible: false,
-      builder: (context) => Container(
+      builder: (_) => Container(
           height: MediaQuery.of(context).size.height * 0.5,
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -291,7 +240,7 @@ class HomeScreen extends StatelessWidget {
                   InkWell(
                     onTap: () {
                       Navigator.pop(context);
-                      context.read<ProductBloc>().add(ClearFilters());
+                      context.read<HistoryListAdminBloc>().add(ClearFiltersHistory());
                     },
                     child: const Padding(
                       padding: EdgeInsets.all(8.0),
@@ -305,7 +254,7 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                     
+
 
                       //Category
                       const Padding(
@@ -318,7 +267,7 @@ class HomeScreen extends StatelessWidget {
                       Container(
                           height: 40,
                           padding:
-                              const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           // margin: const EdgeInsets.symmetric(
                           //     horizontal: 20, vertical: 20),
                           margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal*2,vertical: SizeConfig.blockSizeVertical*0.5),
@@ -327,7 +276,7 @@ class HomeScreen extends StatelessWidget {
                               border: Border.all(color: Colors.black38,width: 1),
                               color: iconBGGrey
                           ),
-                          child: BlocBuilder<ProductBloc, ProductState>(
+                          child: BlocBuilder<HistoryListAdminBloc, HistoryListAdminState>(
                             builder: (context, state) {
                               List<Category> categories = [];
 
@@ -353,8 +302,8 @@ class HomeScreen extends StatelessWidget {
                                     }).toList(),
                                     onChanged: (Category item) {
                                       context
-                                          .read<ProductBloc>()
-                                          .add(CategoryFilterUpdated(category: item));
+                                          .read<HistoryListAdminBloc>()
+                                          .add(CategoryFilterUpdatedHistory(category: item));
                                     },
                                   ),
                                 );
@@ -387,14 +336,14 @@ class HomeScreen extends StatelessWidget {
                       Container(
                           height: 40,
                           padding:
-                              const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal*2,vertical: SizeConfig.blockSizeVertical*0.5),
                           decoration: BoxDecoration(
                               borderRadius: const BorderRadius.all(Radius.circular(5)),
                               border: Border.all(color: Colors.black38,width: 1),
                               color: iconBGGrey
                           ),
-                          child: BlocBuilder<ProductBloc, ProductState>(
+                          child: BlocBuilder<HistoryListAdminBloc, HistoryListAdminState>(
                             builder: (context, state) {
                               List<Category> subCategories = [];
 
@@ -402,8 +351,8 @@ class HomeScreen extends StatelessWidget {
                                 subCategories.add(Category(name: SELECT_VALUE));
                                 subCategories.addAll(state.categories
                                     .where((x) =>
-                                        (state.category.catId != null &&
-                                            x.catId == state.category.uId))
+                                (state.category.catId != null &&
+                                    x.catId == state.category.uId))
                                     .toList());
                               } else {
                                 subCategories = [Category(name: SELECT_VALUE)];
@@ -420,8 +369,8 @@ class HomeScreen extends StatelessWidget {
                                       );
                                     }).toList(),
                                     onChanged: (Category item) {
-                                      context.read<ProductBloc>().add(
-                                          SubCategoryFilterUpdated(
+                                      context.read<HistoryListAdminBloc>().add(
+                                          SubCategoryFilterUpdatedHistory(
                                               subCategory: item));
                                     },
                                   ),
@@ -448,7 +397,7 @@ class HomeScreen extends StatelessWidget {
                       const Padding(
                         padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
                         child: Text(
-                          " Created Date",
+                          "Date",
                           style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -456,24 +405,24 @@ class HomeScreen extends StatelessWidget {
                       Container(
                         height: 40,
                         padding:
-                            const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal*2,vertical: SizeConfig.blockSizeVertical*0.5),
                         decoration: BoxDecoration(
                             borderRadius: const BorderRadius.all(Radius.circular(5)),
                             border: Border.all(color: Colors.black38,width: 1),
                             color: iconBGGrey
                         ),
-                        child: BlocBuilder<ProductBloc, ProductState>(
+                        child: BlocBuilder<HistoryListAdminBloc, HistoryListAdminState>(
                           builder: (_, state) {
                             return TextField(
-                                controller: state.createdDateController,
+                                controller: state.dateController,
                                 onTap: () {
-                                  _selectDate(context,state.createdDate);
+                                  _selectDate(context,state.date);
                                 },
                                 readOnly: true,
                                 decoration: const InputDecoration(
                                     contentPadding:
-                                        EdgeInsets.only(bottom: 10, top: 10),
+                                    EdgeInsets.only(bottom: 10, top: 10),
                                     border: InputBorder.none,
                                     hintText: 'Select'));
                           },
@@ -499,30 +448,13 @@ class HomeScreen extends StatelessWidget {
                               child: MaterialButton(
                                 onPressed: (){
                                   Navigator.pop(context);
-                                  context.read<ProductBloc>().add(UpdateFilters());
+                                  context.read<HistoryListAdminBloc>().add(UpdateFiltersHistory());
                                 },
                                 child: Text("Done",style: TextStyle(color: Colors.white,fontSize: 16),),
                               ),
                             ),
                           ),
 
-                          // ElevatedButton(
-                          //   child: Text("Done",
-                          //       style: TextStyle(
-                          //           color: appWhite,
-                          //           fontSize: SizeConfig.blockSizeHorizontal * 4,
-                          //           fontWeight: FontWeight.bold)),
-                          //   onPressed: () {
-                          //     Navigator.pop(context);
-                          //     context.read<ProductBloc>().add(UpdateFilters());
-                          //   },
-                          //   style: ElevatedButton.styleFrom(
-                          //     primary: primaryColor,
-                          //     padding: EdgeInsets.symmetric(
-                          //         vertical: SizeConfig.blockSizeVertical * 1,
-                          //         horizontal: SizeConfig.blockSizeHorizontal * 10),
-                          //   ),
-                          // ),
                         ],
                       ),
 
@@ -552,8 +484,8 @@ class HomeScreen extends StatelessWidget {
       var selectedDate = DateFormat('dd-MM-yyyy').format(picked);
 
       context
-          .read<ProductBloc>()
-          .add(CreatedDateFilterUpdated(createdDate: "${selectedDate}"));
+          .read<HistoryListAdminBloc>()
+          .add(DateFilterUpdatedHistory(date: "${selectedDate}"));
     }
   }
 }

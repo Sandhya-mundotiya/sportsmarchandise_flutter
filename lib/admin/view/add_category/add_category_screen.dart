@@ -120,7 +120,7 @@ class AddCategoryScreen extends StatelessWidget {
     widgetList.add(main);
     widgetList.add(BlocBuilder<AddCategoryBloc, AddCategoryState>(
         builder: (context, state) =>
-        state.isLoading ? loader() : const SizedBox()));
+        state.isLoading ? loaderAdmin() : const SizedBox()));
     return Stack(children: widgetList);
 
   }

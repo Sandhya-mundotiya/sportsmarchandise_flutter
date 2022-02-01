@@ -11,7 +11,8 @@ class ProductState extends Equatable {
   final bool isLoading;
 
 
-   ProductState({this.products,this.category,this.categories,this.subCategory,this.createdDate = "",this.createdDateController,this.isLoading = true});
+   ProductState({this.products,this.category,
+     this.categories,this.subCategory,this.createdDate = "",this.createdDateController,this.isLoading = true});
 
 
   factory ProductState.initial() {

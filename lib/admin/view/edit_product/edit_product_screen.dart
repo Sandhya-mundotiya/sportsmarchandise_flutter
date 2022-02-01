@@ -145,7 +145,7 @@ class EditProductScreen extends StatelessWidget {
     );
     widgetList.add(main);
     widgetList.add(BlocBuilder<EditProductBloc, EditProductState>(
-        builder: (context, state) => state.isLoading ? loader() : const SizedBox()));
+        builder: (context, state) => state.isLoading ? loaderAdmin() : const SizedBox()));
     return Stack(children: widgetList);
   }
 

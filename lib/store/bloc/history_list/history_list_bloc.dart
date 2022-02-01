@@ -2,18 +2,20 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:merch/models/product_history_model.dart';
 import 'package:merch/models/product_model.dart';
+import 'package:merch/repositories/history/history_repository.dart';
 import 'package:merch/repositories/product/product_repository.dart';
 
 part 'history_list_event.dart';
 part 'history_list_state.dart';
 
 class HistoryListBloc extends Bloc<HistoryListEvent, HistoryListState> {
-  final ProductRepository _productRepository;
-  StreamSubscription _productSubscription;
+  final HistoryRepository _historyRepository;
+  StreamSubscription _historySubscription;
 
 
-  HistoryListBloc({ProductRepository productRepository}): _productRepository = productRepository,
+  HistoryListBloc({HistoryRepository historyRepository}): _historyRepository = historyRepository,
         super(HistoryListState.initial()){
     add(LoadHistoryProducts());
   }
@@ -28,9 +30,9 @@ class HistoryListBloc extends Bloc<HistoryListEvent, HistoryListState> {
   }
 
   Stream<HistoryListState> _mapLoadProductsToState(HistoryListState state) async* {
-    _productSubscription?.cancel();
+    _historySubscription?.cancel();
 
-    _productSubscription = _productRepository.getAllProductsUser().listen(
+    _historySubscription = _historyRepository.getAllHistoryProductsUser().listen(
           (products) => add(
         UpdateHistoryProducts(products),
       ),
@@ -40,7 +42,7 @@ class HistoryListBloc extends Bloc<HistoryListEvent, HistoryListState> {
 
   @override
   Future<void> close() {
-    _productSubscription.cancel();
+    _historySubscription.cancel();
     return super.close();
   }
 }

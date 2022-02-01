@@ -3,12 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/app_color.dart';
 import 'package:merch/constants/string_constant.dart';
 import 'package:merch/constants/utils/size_config.dart';
 import 'package:merch/models/category_model.dart';
 import 'package:merch/models/product_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:merch/repositories/history/history_repository.dart';
 import 'package:merch/repositories/product/product_repository.dart';
 import 'package:merch/store/bloc/history_list/history_list_bloc.dart';
 import 'package:merch/store/bloc/product_detail/product_detail_user_bloc.dart';
@@ -39,7 +41,7 @@ class ProductListScreen extends StatelessWidget {
                     MaterialPageRoute(
                         builder: (context) => BlocProvider(
                             create: (context) =>
-                                HistoryListBloc(productRepository: ProductRepository()),
+                                HistoryListBloc(historyRepository: HistoryRepository()),
                             child: HistoryListScreen())));
               },
               child: Container(
@@ -92,9 +94,7 @@ class ProductListScreen extends StatelessWidget {
                 child: BlocBuilder<ProductUserBloc, ProductUserState>(
                   builder: (context, state) {
                     if (state.isLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return loader();
                     }
 
                     if (!state.isLoading) {
@@ -283,7 +283,7 @@ class ProductListScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        //Catagory
+                        //Category
                         const Padding(
                           padding:
                               EdgeInsets.only(left: 10, right: 10, top: 20),
@@ -357,12 +357,12 @@ class ProductListScreen extends StatelessWidget {
                               },
                             )),
 
-                        //Sub Catagory
+                        //Sub Category
                         const Padding(
                           padding: const EdgeInsets.only(
                               left: 10, right: 10, top: 10),
                           child: Text(
-                            "Sub Catagory",
+                            "Sub Category",
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.bold),
                           ),

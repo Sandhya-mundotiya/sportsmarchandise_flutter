@@ -14,12 +14,28 @@ import 'package:merch/constants/utils/size_config.dart';
        ),
        Center(
          child: CircularProgressIndicator(
-           valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+           valueColor: AlwaysStoppedAnimation<Color>(borderColor),
          ),
        ),
      ],
    );
  }
+
+Widget loaderAdmin(){
+  return Stack(
+    children: const [
+      Opacity(
+        opacity: 0.4,
+        child: ModalBarrier(dismissible: false, color: Colors.grey),
+      ),
+      Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+        ),
+      ),
+    ],
+  );
+}
 Widget appSpinner(String label, TextEditingController controller,Function click){
   return Container(
     margin: EdgeInsets.symmetric(vertical: 5,horizontal: 5),

@@ -1,7 +1,7 @@
 part of 'history_list_bloc.dart';
 
 class HistoryListState extends Equatable {
-  final List<Product> products;
+  final List<ProductHistoryModel> products;
   final bool isLoading;
 
   HistoryListState({this.products,this.isLoading = true});
@@ -14,7 +14,7 @@ class HistoryListState extends Equatable {
   }
 
   HistoryListState update({
-    List<Product> products,
+    List<ProductHistoryModel> products,
     bool isLoading,
   }) {
 
@@ -26,7 +26,7 @@ class HistoryListState extends Equatable {
 
 
   HistoryListState copyWith({
-    List<Product> products,
+    List<ProductHistoryModel> products,
     bool isLoading,
   }) {
 

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:merch/admin/view/home/home_screen.dart';
 import 'package:merch/admin/view/schools_list/schools_list_controller.dart';
 import 'package:merch/admin/bloc/school/school_bloc.dart';
+import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/utils/school.dart';
 import 'package:merch/main.dart';
 import 'package:merch/models/school_model.dart';
@@ -21,9 +22,7 @@ class SchoolsListScreen extends StatelessWidget{
         body: BlocBuilder<SchoolBloc, SchoolState>(
           builder: (context, state) {
             if (state is SchoolLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return loaderAdmin();
             }
             if (state is SchoolLoaded) {
               return ListView(
