@@ -32,6 +32,7 @@ class ProductUserBloc extends Bloc<ProductUserEvent, ProductUserState> {
     if (event is CategoryFilterUpdated) yield state.update(category: event.category,subCategory: Category(name: SELECT_VALUE));
     if (event is SubCategoryFilterUpdated) yield state.update(subCategory: event.subCategory);
     if (event is PriceFilterUpdated) yield state.update(price: event.price);
+    if (event is RecentlyPurchasedFilterUpdated) yield state.update(purchaseDate: event.purchaseDate);
 
     if (event is UpdateFilters) {
       yield state.update(isLoading: true);

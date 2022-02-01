@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:intl/intl.dart';
 import 'package:merch/common/common_widgets.dart';
 import 'package:merch/constants/app_color.dart';
 import 'package:merch/constants/string_constant.dart';
@@ -483,6 +484,42 @@ class ProductListScreen extends StatelessWidget {
                           ),
                         ),
 
+                        //Created Date
+                        const Padding(
+                          padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+                          child: Text(
+                            "Purchase Date",
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+
+                        Container(
+                          height: 40,
+                          padding:
+                          const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal*2,vertical: SizeConfig.blockSizeVertical*0.5),
+                          decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(Radius.circular(5)),
+                              border: Border.all(color: Colors.black38,width: 1),
+                              color: iconBGGrey
+                          ),
+                          child: BlocBuilder<ProductUserBloc, ProductUserState>(
+                            builder: (_, state) {
+                              return TextField(
+                                  controller: state.purchaseDateController,
+                                  onTap: () {
+                                    _selectDate(context,state.purchaseDate);
+                                  },
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                      contentPadding:
+                                      EdgeInsets.only(bottom: 10, top: 10),
+                                      border: InputBorder.none,
+                                      hintText: 'Select'));
+                            },
+                          ),
+                        ),
+
                         const SizedBox(
                           height: 20,
                         ),
@@ -530,6 +567,25 @@ class ProductListScreen extends StatelessWidget {
             )),
       ),
     );
+  }
+
+  Future<void> _selectDate(BuildContext context,String selectedDate) async {
+    var currentDate = DateTime.now();
+    var initialDate = DateTime.now();
+    if(selectedDate != "") initialDate = DateFormat('dd-MM-yyyy').parse(selectedDate);
+
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: initialDate,
+        firstDate: DateTime(currentDate.year - 200),
+        lastDate: currentDate);
+    if (picked != null /*&& picked != selectedDate*/) {
+      var selectedDate = DateFormat('dd-MM-yyyy').format(picked);
+
+      context
+          .read<ProductUserBloc>()
+          .add(RecentlyPurchasedFilterUpdated(purchaseDate: "${selectedDate}"));
+    }
   }
 
 }

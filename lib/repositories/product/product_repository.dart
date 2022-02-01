@@ -193,13 +193,50 @@ class ProductRepository extends BaseProductRepository {
 
   @override
   Stream<List<Product>> getAllProductsUser({String catId = "", String price = "", int purchaseDate = 0}) {
-    if (catId != "" && price != "") {
+    if (catId != "" && price != "" && purchaseDate != 0) {
       return _firebaseFirestore
           .collection(SCHOOL_TABLE)
           .doc(SchoolData.schoolId)
           .collection(PRODUCT_TABLE)
           .where('category', isEqualTo: catId)
           .where('price', isEqualTo: price)
+          .where('lastBought', isEqualTo: purchaseDate)
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs.map((doc) => Product.fromSnapshot(doc)).toList();
+      });
+    }
+    else if (catId != "" && price != "") {
+      return _firebaseFirestore
+          .collection(SCHOOL_TABLE)
+          .doc(SchoolData.schoolId)
+          .collection(PRODUCT_TABLE)
+          .where('category', isEqualTo: catId)
+          .where('price', isEqualTo: price)
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs.map((doc) => Product.fromSnapshot(doc)).toList();
+      });
+    }
+    else if (catId != "" && purchaseDate != 0) {
+      return _firebaseFirestore
+          .collection(SCHOOL_TABLE)
+          .doc(SchoolData.schoolId)
+          .collection(PRODUCT_TABLE)
+          .where('category', isEqualTo: catId)
+          .where('lastBought', isEqualTo: purchaseDate)
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs.map((doc) => Product.fromSnapshot(doc)).toList();
+      });
+    }
+    else if (price != "" && purchaseDate != 0) {
+      return _firebaseFirestore
+          .collection(SCHOOL_TABLE)
+          .doc(SchoolData.schoolId)
+          .collection(PRODUCT_TABLE)
+          .where('price', isEqualTo: price)
+          .where('lastBought', isEqualTo: purchaseDate)
           .snapshots()
           .map((snapshot) {
         return snapshot.docs.map((doc) => Product.fromSnapshot(doc)).toList();
@@ -222,6 +259,17 @@ class ProductRepository extends BaseProductRepository {
           .doc(SchoolData.schoolId)
           .collection(PRODUCT_TABLE)
           .where('price', isEqualTo: price)
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs.map((doc) => Product.fromSnapshot(doc)).toList();
+      });
+    }
+    else if (purchaseDate != 0) {
+      return _firebaseFirestore
+          .collection(SCHOOL_TABLE)
+          .doc(SchoolData.schoolId)
+          .collection(PRODUCT_TABLE)
+          .where('lastBought', isEqualTo: purchaseDate)
           .snapshots()
           .map((snapshot) {
         return snapshot.docs.map((doc) => Product.fromSnapshot(doc)).toList();

@@ -506,23 +506,6 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
 
-                          // ElevatedButton(
-                          //   child: Text("Done",
-                          //       style: TextStyle(
-                          //           color: appWhite,
-                          //           fontSize: SizeConfig.blockSizeHorizontal * 4,
-                          //           fontWeight: FontWeight.bold)),
-                          //   onPressed: () {
-                          //     Navigator.pop(context);
-                          //     context.read<ProductBloc>().add(UpdateFilters());
-                          //   },
-                          //   style: ElevatedButton.styleFrom(
-                          //     primary: primaryColor,
-                          //     padding: EdgeInsets.symmetric(
-                          //         vertical: SizeConfig.blockSizeVertical * 1,
-                          //         horizontal: SizeConfig.blockSizeHorizontal * 10),
-                          //   ),
-                          // ),
                         ],
                       ),
 

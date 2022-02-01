@@ -45,6 +45,15 @@ class PriceFilterUpdated extends ProductUserEvent {
   List<Object> get props => [price];
 }
 
+class RecentlyPurchasedFilterUpdated extends ProductUserEvent {
+  final String purchaseDate;
+
+  RecentlyPurchasedFilterUpdated({this.purchaseDate});
+
+  @override
+  List<Object> get props => [purchaseDate];
+}
+
 class UpdateFilters extends ProductUserEvent {
 
   @override
