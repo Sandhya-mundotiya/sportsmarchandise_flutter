@@ -364,11 +364,17 @@ class ProductRepository extends BaseProductRepository {
         paymentIntentData = null;
 
       }).onError((error, stackTrace){
+        context
+            .read<ProductDetailUserBloc>()
+            .add(StopLoading());
 
       });
 
 
     } on StripeException catch (e) {
+      context
+          .read<ProductDetailUserBloc>()
+          .add(StopLoading());
     } catch (e) {
     }
   }
@@ -438,7 +444,7 @@ class ProductRepository extends BaseProductRepository {
               applePay: true,
               googlePay: true,
               testEnv: true,
-              style: ThemeMode.dark,
+              style: ThemeMode.light,
               merchantCountryCode: 'US',
               merchantDisplayName: 'ANNIE')).then((value){
       });
@@ -446,6 +452,9 @@ class ProductRepository extends BaseProductRepository {
       displayPaymentSheet(product: product,context: context);
 
     } catch (e, s) {
+      context
+          .read<ProductDetailUserBloc>()
+          .add(StopLoading());
       print('exception:$e$s');
     }
   }

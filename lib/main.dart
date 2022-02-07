@@ -27,6 +27,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // set the publishable key for Stripe - this is mandatory
   Stripe.publishableKey = 'pk_test_4R3QOVd7lK64gHdpf6HWi5qo';
+  Stripe.merchantIdentifier = 'sports marchandise';
+  await Stripe.instance.applySettings();
 
   Bloc.observer = AppBlocObserver();
   await Firebase.initializeApp(
