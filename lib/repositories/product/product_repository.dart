@@ -181,13 +181,19 @@ class ProductRepository extends BaseProductRepository {
   }
 
   Future<String> uploadFile(Asset _image) async {
-    // var path = await MultipartFile.fromFile('assets/${_image.name}', filename: _image.name);
-    var path = await FlutterAbsolutePath.getAbsolutePath(_image.identifier);
 
-    print("path : " + path);
-    String fileName = path.split('/').last;
+    final temp = await Directory.systemTemp.create();
+
+    final data = await _image.getByteData();
+    File file =  await File('${temp.path}/img${_image.name}').writeAsBytes(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+
+    // var path = await FlutterAbsolutePath.getAbsolutePath(_image.identifier);
+
+    print("path : " + file.path);
+    String fileName = file.path.split('/').last;
     var ref = FirebaseStorage.instance.ref('/$PRODUCT_IMAGES/$fileName');
-    await ref.putFile(File(path));
+    await ref.putFile(File(file.path));
     return await ref.getDownloadURL();
   }
 

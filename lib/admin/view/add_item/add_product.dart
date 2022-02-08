@@ -233,6 +233,7 @@ class AddProductScreen extends StatelessWidget {
             children: [
               AppBar(
                 centerTitle: true,
+                backgroundColor: primaryColor,
                 title: Text(title, style: const TextStyle(color: appWhite)),
                 automaticallyImplyLeading: false,
                 actions: [

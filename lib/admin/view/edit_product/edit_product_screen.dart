@@ -18,8 +18,15 @@ class EditProductScreen extends StatelessWidget {
     List<Widget> widgetList = [];
     var main = WillPopScope(
       onWillPop: () {
-        Navigator.pop(context);
-        return;
+
+        if (!(BlocProvider.of<EditProductBloc>(context).state.imagesNetwork.isNotEmpty)) {
+          snac("Please update product",
+              error: true);
+        }else{
+          Navigator.pop(context);
+          return;
+        }
+
       },
       child: Scaffold(
         appBar: AppBar(
@@ -170,6 +177,7 @@ class EditProductScreen extends StatelessWidget {
             children: [
               AppBar(
                 centerTitle: true,
+                backgroundColor: primaryColor,
                 title: Text(title, style: const TextStyle(color: appWhite)),
                 automaticallyImplyLeading: false,
                 actions: [

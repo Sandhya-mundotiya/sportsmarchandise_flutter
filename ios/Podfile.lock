@@ -360,7 +360,7 @@ PODS:
   - firebase_core (1.10.6):
     - Firebase/CoreOnly (= 8.9.0)
     - Flutter
-  - firebase_storage (10.2.4):
+  - firebase_storage (10.2.6):
     - Firebase/Storage (= 8.9.0)
     - firebase_core
     - Flutter
@@ -390,6 +390,8 @@ PODS:
     - FirebaseCore (~> 8.0)
     - GTMSessionFetcher/Core (~> 1.5)
   - Flutter (1.0.0)
+  - flutter_absolute_path (0.0.1):
+    - Flutter
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
@@ -460,6 +462,7 @@ DEPENDENCIES:
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
+  - flutter_absolute_path (from `.symlinks/plugins/flutter_absolute_path/ios`)
   - multi_image_picker2 (from `.symlinks/plugins/multi_image_picker2/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
@@ -497,6 +500,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_storage/ios"
   Flutter:
     :path: Flutter
+  flutter_absolute_path:
+    :path: ".symlinks/plugins/flutter_absolute_path/ios"
   multi_image_picker2:
     :path: ".symlinks/plugins/multi_image_picker2/ios"
   path_provider_ios:
@@ -513,12 +518,13 @@ SPEC CHECKSUMS:
   cloud_firestore: 338122a6149c14ca376ad363626b5bf3037a5056
   Firebase: 13d8d96499e2635428d5bf0ec675df21f95d9a95
   firebase_core: c263d7daf1dc92fcd9895e6abdc04872b0ee07ff
-  firebase_storage: 2ed331c6bd5bfa6d64f1a6c57f01151f4f146c16
+  firebase_storage: eb86d7ed9acdded0d316fc2f48e3e87ad7cea067
   FirebaseCore: 599ee609343eaf4941bd188f85e3aa077ffe325b
   FirebaseCoreDiagnostics: 56fb7216d87e0e6ec2feddefa9d8a392fe8b2c18
   FirebaseFirestore: 15ae9648476436efed698a909e44c4737498f9b4
   FirebaseStorage: 452c98c31ccb40b819764bf3039426c4388d9939
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  flutter_absolute_path: 5adb13678c88f0bdfba527f3851f9543d01dde66
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
