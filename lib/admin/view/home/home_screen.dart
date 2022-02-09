@@ -233,7 +233,7 @@ class HomeScreen extends StatelessWidget {
                               alignment: Alignment.bottomRight,
                               child: Padding(
                                 padding: EdgeInsets.only(
-                                    top: SizeConfig.blockSizeHorizontal * 2),
+                                    top: SizeConfig.blockSizeHorizontal * 2,left: SizeConfig.blockSizeHorizontal * 1,right: SizeConfig.blockSizeHorizontal * 1),
                                 child: Icon(
                                   Icons.edit,
                                   size: 15,

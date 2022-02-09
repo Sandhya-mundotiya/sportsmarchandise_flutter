@@ -64,7 +64,8 @@ class EditProductBloc extends Bloc<EditProductEvent, EditProductState> {
           descValue: _selectedProduct.description,
           imagesNetwork: _selectedProduct.images,
           selectedCategory: category,
-          categoryValue: category.name
+          categoryValue: category.name,
+        isEnabled: _selectedProduct.isEnabled
       ));
     }
     if (event is AddImagesToModel) yield(state.update(images: event.images));
