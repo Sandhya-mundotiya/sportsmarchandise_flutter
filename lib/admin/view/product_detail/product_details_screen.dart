@@ -31,7 +31,7 @@ class ProductDetailsScreen extends StatelessWidget {
                     padding: EdgeInsets.symmetric(
                         vertical: SizeConfig.blockSizeHorizontal * 5,
                         horizontal: SizeConfig.blockSizeHorizontal * 5),
-                    child: SingleChildScrollView(
+                    child: state.isExistProduct ? SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -39,13 +39,13 @@ class ProductDetailsScreen extends StatelessWidget {
                             builder: (context, state) {
                               return CarouselSlider(
                                 options: CarouselOptions(
-                                    // aspectRatio: 16 / 9,
-                                    // viewportFraction: 0.8,
+                                  // aspectRatio: 16 / 9,
+                                  // viewportFraction: 0.8,
                                     initialPage: 0,
                                     enableInfiniteScroll: false,
                                     reverse: false,
                                     autoPlayInterval:
-                                        const Duration(seconds: 3),
+                                    const Duration(seconds: 3),
                                     autoPlayCurve: Curves.fastOutSlowIn,
                                     enlargeCenterPage: true,
                                     scrollDirection: Axis.horizontal,
@@ -60,39 +60,39 @@ class ProductDetailsScreen extends StatelessWidget {
                                     builder: (BuildContext context) {
                                       return Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Center(
                                             child: CachedNetworkImage(
                                                 imageUrl: image,
                                                 fit: BoxFit.fill,
                                                 height: SizeConfig
-                                                        .blockSizeVertical *
+                                                    .blockSizeVertical *
                                                     20,
                                                 width: SizeConfig
-                                                        .blockSizeHorizontal *
+                                                    .blockSizeHorizontal *
                                                     70,
                                                 placeholder: (context, url) =>
                                                     Container(
                                                       child: Shimmer.fromColors(
                                                         baseColor:
-                                                            Colors.grey[300],
+                                                        Colors.grey[300],
                                                         highlightColor:
-                                                            Colors.grey[100],
+                                                        Colors.grey[100],
                                                         child: Column(
                                                             mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
+                                                            MainAxisAlignment
+                                                                .start,
                                                             crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
+                                                            CrossAxisAlignment
+                                                                .start,
                                                             children: [
                                                               Container(
                                                                 width: SizeConfig
-                                                                        .blockSizeHorizontal *
+                                                                    .blockSizeHorizontal *
                                                                     70,
                                                                 height: SizeConfig
-                                                                        .blockSizeVertical *
+                                                                    .blockSizeVertical *
                                                                     20,
                                                                 color: Colors
                                                                     .white,
@@ -115,24 +115,24 @@ class ProductDetailsScreen extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: state.product.images.map((image) {
                                   int index =
-                                      state.product.images.indexOf(image);
+                                  state.product.images.indexOf(image);
                                   return BlocBuilder<ProductDetailBloc,
-                                          ProductDetailState>(
+                                      ProductDetailState>(
                                       builder: (context, state) {
-                                    return Container(
-                                      width: 8.0,
-                                      height: 8.0,
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 4.0, horizontal: 2.0),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color:
+                                        return Container(
+                                          width: 8.0,
+                                          height: 8.0,
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 4.0, horizontal: 2.0),
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color:
                                             state.carouselCurentIndex == index
                                                 ? Colors.black
                                                 : Colors.grey,
-                                      ),
-                                    );
-                                  });
+                                          ),
+                                        );
+                                      });
                                 }).toList(),
                               );
                             },
@@ -146,7 +146,7 @@ class ProductDetailsScreen extends StatelessWidget {
                                 return Text(state.product.name,
                                     style: TextStyle(
                                         fontSize:
-                                            SizeConfig.blockSizeHorizontal * 4,
+                                        SizeConfig.blockSizeHorizontal * 4,
                                         fontWeight: FontWeight.w500,
                                         color: appBlack));
                               },
@@ -161,7 +161,7 @@ class ProductDetailsScreen extends StatelessWidget {
                                 return Text("\$" + state.product.price,
                                     style: TextStyle(
                                         fontSize:
-                                            SizeConfig.blockSizeHorizontal * 4,
+                                        SizeConfig.blockSizeHorizontal * 4,
                                         fontWeight: FontWeight.w500,
                                         color: Colors.grey));
                               },
@@ -176,8 +176,8 @@ class ProductDetailsScreen extends StatelessWidget {
                                 return Text(state.product.description,
                                     style: TextStyle(
                                         fontSize:
-                                            SizeConfig.blockSizeHorizontal *
-                                                3.5,
+                                        SizeConfig.blockSizeHorizontal *
+                                            3.5,
                                         fontWeight: FontWeight.normal,
                                         color: appBlack));
                               },
@@ -185,7 +185,10 @@ class ProductDetailsScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
+                    ) : Text("Product does not exist",
+                      style: TextStyle(
+                      fontSize: 16
+                    ),),
                   );
           },
         ),

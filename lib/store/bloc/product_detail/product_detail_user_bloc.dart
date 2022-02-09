@@ -30,7 +30,7 @@ class ProductDetailUserBloc extends Bloc<ProductDetailUserEvent, ProductDetailUs
     }
 
     if(event is ShowProductDetail){
-      yield state.update(product: event.product,isLoading: false);
+      yield state.update(product: event.product,isLoading: false,isExistProduct: event.isExistProduct);
     }
 
     if(event is UpdateCarouselIndex) yield state.update(carouselCurentIndex: event.carouselCurentIndex);
@@ -48,9 +48,16 @@ class ProductDetailUserBloc extends Bloc<ProductDetailUserEvent, ProductDetailUs
 
     _productSubscription = _productRepository.getProductByProductId(productId: _productId).listen(
           (product) {
-            add(
-              ShowProductDetail(product: product)
-            );
+            if(product != null){
+              add(
+                ShowProductDetail(product: product,isExistProduct: true),
+              );
+
+            }else{
+              add(
+                ShowProductDetail(isExistProduct: false),
+              );
+            }
             _productSubscription.cancel();
           },
     );

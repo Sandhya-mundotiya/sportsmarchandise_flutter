@@ -36,9 +36,10 @@ class EditProductBloc extends Bloc<EditProductEvent, EditProductState> {
   Stream<EditProductState> mapEventToState(EditProductEvent event,) async* {
     if (event is LoadCategory) {
       Category category = event.categories.firstWhere((element) =>
-      element.uId == _selectedProduct.catId);
+      element.uId == _selectedProduct.catId ,orElse: () => null);
       print(category);
       Category subCategory;
+
 
       if (category != null && category.catId != null && category.catId != "") {
         subCategory = category;
@@ -56,6 +57,16 @@ class EditProductBloc extends Bloc<EditProductEvent, EditProductState> {
             selectedSubCategory: subCategory,
             isEnabled: _selectedProduct.isEnabled
         ));
+      }else if(category != null){
+        yield(state.update(categoryList: event.categories,
+            nameValue: _selectedProduct.name,
+            priceValue: _selectedProduct.price,
+            descValue: _selectedProduct.description,
+            imagesNetwork: _selectedProduct.images,
+            selectedCategory: category,
+            categoryValue: category.name,
+            isEnabled: _selectedProduct.isEnabled
+        ));
       }
 
       yield(state.update(categoryList: event.categories,
@@ -63,8 +74,6 @@ class EditProductBloc extends Bloc<EditProductEvent, EditProductState> {
           priceValue: _selectedProduct.price,
           descValue: _selectedProduct.description,
           imagesNetwork: _selectedProduct.images,
-          selectedCategory: category,
-          categoryValue: category.name,
         isEnabled: _selectedProduct.isEnabled
       ));
     }

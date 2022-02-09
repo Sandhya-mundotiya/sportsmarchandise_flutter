@@ -14,12 +14,13 @@ class LoadProductDetail extends ProductDetailEvent{
 
 class ShowProductDetail extends ProductDetailEvent{
   final Product product;
+  final isExistProduct;
 
-  ShowProductDetail({this.product});
+  ShowProductDetail({this.product,this.isExistProduct});
 
   @override
   // TODO: implement props
-  List<Object> get props => [product];
+  List<Object> get props => [product,isExistProduct];
 
 }
 

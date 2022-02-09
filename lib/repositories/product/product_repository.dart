@@ -321,7 +321,11 @@ class ProductRepository extends BaseProductRepository {
         .doc(SchoolData.schoolId)
         .collection(PRODUCT_TABLE).doc(productId).snapshots();
 
-    return docSnapshot.map((doc) => Product.fromSnapshot(doc));
+    return docSnapshot.map((doc){
+
+      if(doc.exists) return Product.fromSnapshot(doc);
+      else return null;
+    });
   }
 
   @override
