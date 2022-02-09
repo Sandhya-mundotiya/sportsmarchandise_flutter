@@ -47,9 +47,12 @@ class ProductDetailUserBloc extends Bloc<ProductDetailUserEvent, ProductDetailUs
     _productSubscription?.cancel();
 
     _productSubscription = _productRepository.getProductByProductId(productId: _productId).listen(
-          (product) => add(
-        ShowProductDetail(product: product),
-      ),
+          (product) {
+            add(
+              ShowProductDetail(product: product)
+            );
+            _productSubscription.cancel();
+          },
     );
   }
 

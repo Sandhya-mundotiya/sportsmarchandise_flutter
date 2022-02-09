@@ -262,9 +262,11 @@ class EditCategoryScreen extends StatelessWidget {
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<Category>(
+                isExpanded: true,
                 value: selectedCategory,
                 items: categoryList.map((Category category) {
                   return DropdownMenuItem<Category>(
+
                     value: category,
                     child: Text(category.name),
                   );

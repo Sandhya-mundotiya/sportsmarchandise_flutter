@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -182,18 +184,38 @@ class ProductRepository extends BaseProductRepository {
 
   Future<String> uploadFile(Asset _image) async {
 
-    final temp = await Directory.systemTemp.create();
 
-    final data = await _image.getByteData();
-    File file =  await File('${temp.path}/img${_image.name}').writeAsBytes(
-        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+    var path = "";
 
-    // var path = await FlutterAbsolutePath.getAbsolutePath(_image.identifier);
+    if(Platform.isIOS){
+      final temp = await Directory.systemTemp.create();
 
-    print("path : " + file.path);
-    String fileName = file.path.split('/').last;
+      final data = await _image.getByteData();
+      File file =  await File('${temp.path}/img${_image.name}').writeAsBytes(
+          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+
+      path = file.path;
+
+    }else {
+      path = await FlutterAbsolutePath.getAbsolutePath(_image.identifier);
+    }
+
+
+
+
+    print("path : " + path);
+    String fileName = path.split('/').last;
     var ref = FirebaseStorage.instance.ref('/$PRODUCT_IMAGES/$fileName');
-    await ref.putFile(File(file.path));
+    await ref.putFile(File(path));
+    return await ref.getDownloadURL();
+  }
+
+
+  Future<String> uploadHistoryImage(String path) async {
+    print("path : " + path);
+    String fileName = path.split('/').last;
+    var ref = FirebaseStorage.instance.ref('/$PRODUCT_IMAGES/$fileName');
+    await ref.putFile(File(path));
     return await ref.getDownloadURL();
   }
 
@@ -361,7 +383,7 @@ class ProductRepository extends BaseProductRepository {
             confirmPayment: true,
           )).then((newValue){
 
-        updatePurchaseDate(product: product,
+         updatePurchaseDate(product: product,
             paymentId: paymentIntentData['id'].toString(),
           clientSecretId: paymentIntentData['client_secret'].toString(),
           amount: paymentIntentData['amount'].toString(),
@@ -370,22 +392,22 @@ class ProductRepository extends BaseProductRepository {
         paymentIntentData = null;
 
       }).onError((error, stackTrace){
-        context
-            .read<ProductDetailUserBloc>()
-            .add(StopLoading());
+        // context
+        //     .read<ProductDetailUserBloc>()
+        //     .add(StopLoading());
 
       });
 
 
     } on StripeException catch (e) {
-      context
-          .read<ProductDetailUserBloc>()
-          .add(StopLoading());
+      // context
+      //     .read<ProductDetailUserBloc>()
+      //     .add(StopLoading());
     } catch (e) {
     }
   }
 
-  Future<String> updatePurchaseDate({Product product,String paymentId, String clientSecretId, String amount,BuildContext context,}) {
+  updatePurchaseDate({Product product,String paymentId, String clientSecretId, String amount,BuildContext context,}) {
 
     var currentDate = DateTime.now();
     DateTime formattedDate = new DateTime(currentDate.year, currentDate.month, currentDate.day);
@@ -412,25 +434,43 @@ class ProductRepository extends BaseProductRepository {
 
   saveHistoryEntry({Product product,String paymentId, String clientSecretId, String amount,BuildContext context,}) async{
 
+
+    final temp = await Directory.systemTemp.create();
+
+    var imageName = Random().nextInt(100000).toString();
+    final ByteData imageData = await NetworkAssetBundle(Uri.parse(product.images[0])).load("");
+    File file =  await File('${temp.path}/img${imageName}').writeAsBytes(
+        imageData.buffer.asUint8List(imageData.offsetInBytes, imageData.lengthInBytes));
+    var path = file.path;
+
+
+
+    uploadHistoryImage(path).then((value) {
+      saveHistoryToFirebase(product: product,paymentId: paymentId,clientSecretId: clientSecretId,amount: amount,context: context,image: value);
+    });
+
+  }
+
+
+  saveHistoryToFirebase({Product product,String paymentId, String clientSecretId, String amount,BuildContext context,String image}) async{
     var currentDate = DateTime.now();
     DateTime formattedDate = new DateTime(currentDate.year, currentDate.month, currentDate.day);
 
 
     double amt = (int.parse(amount))/100;
     String amtString = amt.toString();
-
     ProductHistoryModel historyProduct = ProductHistoryModel(
       productId: product.uid,
       name: product.name,
       price: product.price,
       description: product.description,
-      image: product.images[0],
+      image: image,
       stripePaymentId: paymentId,
       stripeClientSecretId: clientSecretId,
       createdAt: formattedDate.microsecondsSinceEpoch,
       stripeAmount: amtString,
-        catId: product.catId,
-        adminId: "",
+      catId: product.catId,
+      adminId: "",
       uid: "",
       userId: "",
     );
@@ -455,12 +495,12 @@ class ProductRepository extends BaseProductRepository {
               merchantDisplayName: 'ANNIE')).then((value){
       });
 
-      displayPaymentSheet(product: product,context: context);
+      await displayPaymentSheet(product: product,context: context);
 
     } catch (e, s) {
-      context
-          .read<ProductDetailUserBloc>()
-          .add(StopLoading());
+      // context
+      //     .read<ProductDetailUserBloc>()
+      //     .add(StopLoading());
       print('exception:$e$s');
     }
   }

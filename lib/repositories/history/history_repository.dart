@@ -30,13 +30,14 @@ class HistoryRepository extends BaseHistoryRepository {
         .doc(SchoolData.schoolId)
         .collection(HISTORY_TABLE);
     reference.add(productObj.toJson()).then((value) {
-      context
-          .read<ProductDetailUserBloc>()
-          .add(StopLoading());
+
        showAlertDialog(
            message: 'Product has been purchased successfully',
          isShowBtn1: true,
          onTapBtn2: (){
+           context
+               .read<ProductDetailUserBloc>()
+               .add(StopLoading());
              Navigator.pop(context);
          },
            button1Name: "Go to History",
@@ -44,6 +45,9 @@ class HistoryRepository extends BaseHistoryRepository {
            Navigator.of(context).popUntil((route){
              return route.settings.name == 'ProductListScreen';
            });
+           context
+               .read<ProductDetailUserBloc>()
+               .add(StopLoading());
            Navigator.push(
                context,
                MaterialPageRoute(
