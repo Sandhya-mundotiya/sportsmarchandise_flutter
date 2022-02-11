@@ -487,7 +487,9 @@ class ProductRepository extends BaseProductRepository {
   buyProduct({Product product,BuildContext context,}) async{
     try {
 
-      paymentIntentData = await createPaymentIntent(product.price, 'USD');
+      var price = product.price.replaceAll(RegExp('[^0-9]'), '');
+
+      paymentIntentData = await createPaymentIntent(price, 'USD');
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
               paymentIntentClientSecret: paymentIntentData['client_secret'],

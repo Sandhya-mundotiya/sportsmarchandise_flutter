@@ -217,7 +217,7 @@ class ProductListScreen extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.only(
                             top: SizeConfig.blockSizeHorizontal * 2),
-                        child: Text("₹" + product.price,
+                        child: Text("\$" + product.price.replaceAll(RegExp('[^0-9]'), ''),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
                             style: TextStyle(

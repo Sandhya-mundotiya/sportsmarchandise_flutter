@@ -28,7 +28,7 @@ class ProductDetailUserScreen extends StatelessWidget {
                 appBar: AppBar(
                   title: const Text("View Product"),
                 ),
-                body: state.isLoading
+                body: state.isInitialLoader
                     ? loader()
                     : Container(
                         margin: EdgeInsets.symmetric(
@@ -178,7 +178,7 @@ class ProductDetailUserScreen extends StatelessWidget {
                                       padding: EdgeInsets.only(
                                           top: SizeConfig.blockSizeHorizontal *
                                               4),
-                                      child: Text("\$" + state.product.price,
+                                      child: Text("\$" + state.product.price.replaceAll(RegExp('[^0-9]'), ''),
                                           style: TextStyle(
                                               fontSize: SizeConfig
                                                       .blockSizeHorizontal *
@@ -281,6 +281,14 @@ class ProductDetailUserScreen extends StatelessWidget {
                             : Text("Product does not exist"),
                       ),
               );
+            },
+          ),
+
+          BlocBuilder<ProductDetailUserBloc, ProductDetailUserState>(
+            builder: (context, state) {
+              return state.isLoading
+                  ? loader()
+                  : SizedBox();
             },
           ),
         ],

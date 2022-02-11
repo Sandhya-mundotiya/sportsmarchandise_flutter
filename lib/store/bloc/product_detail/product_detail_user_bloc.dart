@@ -30,7 +30,7 @@ class ProductDetailUserBloc extends Bloc<ProductDetailUserEvent, ProductDetailUs
     }
 
     if(event is ShowProductDetail){
-      yield state.update(product: event.product,isLoading: false,isExistProduct: event.isExistProduct);
+      yield state.update(product: event.product,isInitialLoader: false,isExistProduct: event.isExistProduct);
     }
 
     if(event is UpdateCarouselIndex) yield state.update(carouselCurentIndex: event.carouselCurentIndex);

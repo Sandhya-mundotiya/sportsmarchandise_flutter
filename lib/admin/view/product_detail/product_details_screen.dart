@@ -158,7 +158,7 @@ class ProductDetailsScreen extends StatelessWidget {
                             child: BlocBuilder<ProductDetailBloc,
                                 ProductDetailState>(
                               builder: (context, state) {
-                                return Text("\$" + state.product.price,
+                                return Text("\$" + state.product.price.replaceAll(RegExp('[^0-9]'), ''),
                                     style: TextStyle(
                                         fontSize:
                                         SizeConfig.blockSizeHorizontal * 4,
